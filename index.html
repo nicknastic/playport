@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PlayPort</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- BOOT SCREEN -->
+  <div id="screen-boot" class="screen active">
+    <div class="boot-inner">
+      <div class="boot-logo">PLAYPORT</div>
+      <div class="boot-sub">That&#39;s the name of the game</div>
+      <div class="boot-buttons">
+        <button class="btn" id="btn-play">▶ PLAY</button>
+        <button class="btn btn-secondary" id="btn-settings-boot">⚙ SETTINGS</button>
+        <button class="btn btn-danger" id="btn-quit">✕ QUIT</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN MENU -->
+  <div id="screen-menu" class="screen">
+    <div class="menu-header">
+      <button class="btn-small" id="btn-back-menu">◀ BACK</button>
+      <h2 class="menu-title">SELECT CARTRIDGE</h2>
+      <div class="token-display">🪙 <span id="token-count">0</span></div>
+    </div>
+    <div class="cartridge-grid" id="cartridge-grid"></div>
+  </div>
+
+  <!-- SETTINGS SCREEN -->
+  <div id="screen-settings" class="screen">
+    <div class="settings-inner">
+      <h2 class="menu-title">SETTINGS</h2>
+      <div class="setting-row">
+        <label>SOUND</label>
+        <input type="range" id="setting-sound" min="0" max="100" value="80">
+        <span id="sound-val">80</span>
+      </div>
+      <div class="setting-row">
+        <label>SCREEN SIZE</label>
+        <select id="setting-screen">
+          <option value="small">SMALL</option>
+          <option value="medium" selected>MEDIUM</option>
+          <option value="large">LARGE</option>
+        </select>
+      </div>
+      <div class="setting-row">
+        <label>PERFORMANCE</label>
+        <select id="setting-perf">
+          <option value="low">LOW</option>
+          <option value="high" selected>HIGH</option>
+        </select>
+      </div>
+      <div class="setting-row">
+        <button class="btn btn-danger" id="btn-reset-tokens">RESET PROGRESS</button>
+      </div>
+      <button class="btn" id="btn-back-settings">◀ BACK</button>
+    </div>
+  </div>
+
+  <!-- GAME SCREEN -->
+  <div id="screen-game" class="screen">
+    <div class="game-header">
+      <button class="btn-small" id="btn-back-game">◀ QUIT</button>
+      <span class="game-title-display" id="game-title-display"></span>
+      <div class="token-display">🪙 <span id="game-token-count">0</span></div>
+    </div>
+    <div class="canvas-wrapper">
+      <canvas id="game-canvas" width="480" height="440"></canvas>
+    </div>
+    <div class="controls-hint" id="controls-hint"></div>
+  </div>
+
+  <!-- UNLOCK MODAL -->
+  <div id="unlock-modal" class="modal-overlay hidden">
+    <div class="modal-box">
+      <div class="modal-title" id="modal-title">LOCKED</div>
+      <div class="modal-body" id="modal-body"></div>
+      <div class="modal-buttons">
+        <button class="btn" id="modal-unlock">UNLOCK</button>
+        <button class="btn btn-secondary" id="modal-cancel">CANCEL</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/state.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/games/juggling.js"></script>
+  <script src="js/games/box-sorting.js"></script>
+  <script src="js/games/flappy-goose.js"></script>
+  <script src="js/games/moon-landing.js"></script>
+  <script src="js/games/tile-sorting.js"></script>
+  <script src="js/games/whack-a-mole.js"></script>
+</body>
+</html>
