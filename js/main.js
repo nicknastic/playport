@@ -38,7 +38,6 @@ function renderCartridges() {
       el.style.backgroundImage = `url('${g.img}')`;
       el.style.backgroundSize = 'cover';
       el.style.backgroundPosition = 'center top';
-      el.style.background = ''; // clear gradient
     } else {
       // Fallback gradient for games without artwork (Moon Landing)
       el.style.background = `linear-gradient(160deg, ${g.color}, ${g.bg})`;

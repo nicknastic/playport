@@ -22,14 +22,24 @@ const JugglingGame = (() => {
   }
 
   function spawnBall() {
+    // First ball always drops from centre; extras pick a random top zone
+    const zones = [
+      { x: canvas.width * 0.18, vx:  18 },   // top-left
+      { x: canvas.width * 0.50, vx:   0 },   // top-centre
+      { x: canvas.width * 0.82, vx: -18 },   // top-right
+    ];
+    const zone = balls.length === 0
+      ? zones[1]                                      // first ball: centre
+      : zones[Math.floor(Math.random() * zones.length)]; // extras: random
+
     return {
-      x: canvas.width / 2 + (Math.random() - 0.5) * 30,
-      y: 80,
-      vx: (Math.random() - 0.5) * 15,
+      x: zone.x + (Math.random() - 0.5) * 20,
+      y: 60,
+      vx: zone.vx + (Math.random() - 0.5) * 10,
       vy: 0,
       r: 13,
       color: `hsl(${Math.random()*360},80%,60%)`,
-      trail: []   // last N positions for direction trail
+      trail: []
     };
   }
 
