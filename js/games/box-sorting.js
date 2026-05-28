@@ -208,22 +208,127 @@ const BoxSortingGame = (() => {
   }
 
   function drawTruck(x, y, color, label) {
+    const TW = TRUCK_W, TH = TRUCK_H;
+    const trailerW = 62, cabW = 38;
+    const cabX = x + trailerW;
+    const wheelY = y + TH - 2;
+
+    // ── Trailer ──
+    const tTop = y + 14, tBot = y + TH - 14, tH = tBot - tTop;
+    // Shadow underneath
+    ctx.fillStyle = 'rgba(0,0,0,0.25)';
+    ctx.fillRect(x + 2, tBot + 2, trailerW, 5);
+    // Main coloured body
     ctx.fillStyle = color;
-    ctx.fillRect(x, y + 20, TRUCK_W, TRUCK_H - 20);
-    ctx.fillRect(x + TRUCK_W - 30, y, 30, 30);
-    ctx.fillStyle = '#222';
-    ctx.beginPath(); ctx.arc(x+20, y+TRUCK_H, 14, 0, Math.PI*2); ctx.fill();
-    ctx.beginPath(); ctx.arc(x+TRUCK_W-15, y+TRUCK_H, 14, 0, Math.PI*2); ctx.fill();
-    ctx.fillStyle = '#555';
-    ctx.beginPath(); ctx.arc(x+20, y+TRUCK_H, 6, 0, Math.PI*2); ctx.fill();
-    ctx.beginPath(); ctx.arc(x+TRUCK_W-15, y+TRUCK_H, 6, 0, Math.PI*2); ctx.fill();
-    ctx.fillStyle = '#aaddff';
-    ctx.fillRect(x+TRUCK_W-26, y+4, 18, 16);
+    ctx.fillRect(x, tTop, trailerW, tH);
+    // Roof highlight
+    const hi = color === '#c0392b' ? '#e05858' : '#3ca8dd';
+    ctx.fillStyle = hi;
+    ctx.fillRect(x, tTop, trailerW, 4);
+    // Bottom shadow strip
+    ctx.fillStyle = 'rgba(0,0,0,0.22)';
+    ctx.fillRect(x, tBot - 5, trailerW, 5);
+    // Vertical curtain straps
+    ctx.fillStyle = 'rgba(0,0,0,0.13)';
+    for (let i = 1; i <= 4; i++) ctx.fillRect(x + i * 12, tTop + 2, 2, tH - 4);
+    // Horizontal rail lines
+    ctx.fillStyle = 'rgba(0,0,0,0.14)';
+    ctx.fillRect(x, tTop + tH * 0.38, trailerW, 1.5);
+    ctx.fillRect(x, tTop + tH * 0.68, trailerW, 1.5);
+    // Undercarriage rail
+    ctx.fillStyle = '#333';
+    ctx.fillRect(x + 2, tBot, trailerW - 4, 5);
+    // Label on trailer
     ctx.fillStyle = '#fff';
-    ctx.font = '8px "Press Start 2P"';
-    ctx.fillText(label, x+8, y+42);
     ctx.font = '7px "Press Start 2P"';
-    ctx.fillText('TRUCK', x+4, y+54);
+    ctx.fillText(label, x + 5, tTop + tH / 2 + 3);
+
+    // Trailer axle wheels (2 axles)
+    [x + 14, x + 32].forEach(wx => {
+      ctx.fillStyle = '#141414';
+      ctx.beginPath(); ctx.arc(wx, wheelY, 11, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#c0c0c0';
+      ctx.beginPath(); ctx.arc(wx, wheelY, 6, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#707070';
+      ctx.beginPath(); ctx.arc(wx, wheelY, 3, 0, Math.PI * 2); ctx.fill();
+      // Wheel bolts
+      ctx.fillStyle = '#d8d8d8';
+      for (let a = 0; a < 5; a++) {
+        const ang = (a / 5) * Math.PI * 2;
+        ctx.beginPath(); ctx.arc(wx + Math.cos(ang) * 4, wheelY + Math.sin(ang) * 4, 1, 0, Math.PI * 2); ctx.fill();
+      }
+    });
+
+    // ── Cab (silver, flat-front / cab-over style) ──
+    const cTop = y + 2, cBot = y + TH - 8, cH = cBot - cTop;
+    // Cab shadow
+    ctx.fillStyle = 'rgba(0,0,0,0.2)';
+    ctx.fillRect(cabX + 2, cBot + 2, cabW + 2, 5);
+    // Cab body (silver)
+    ctx.fillStyle = '#d2d2d2';
+    ctx.fillRect(cabX, cTop + 8, cabW, cH - 8);
+    // Cab roof
+    ctx.fillStyle = '#bebebe';
+    ctx.fillRect(cabX + 2, cTop, cabW - 2, 12);
+    ctx.fillStyle = '#cacaca';
+    ctx.fillRect(cabX, cTop + 4, cabW, 8);
+    // Air fairing / roof spoiler
+    ctx.fillStyle = '#aaaaaa';
+    ctx.fillRect(cabX - 2, cTop - 7, cabW + 2, 9);
+    ctx.fillStyle = '#b8b8b8';
+    ctx.fillRect(cabX - 1, cTop - 5, cabW + 1, 6);
+    // Windshield (large, cab-over style)
+    ctx.fillStyle = '#4e6e84';
+    ctx.fillRect(cabX + 2, cTop + 5, cabW - 10, 22);
+    // Windshield glare
+    ctx.fillStyle = 'rgba(255,255,255,0.32)';
+    ctx.fillRect(cabX + 4, cTop + 7, 7, 10);
+    ctx.fillStyle = 'rgba(255,255,255,0.14)';
+    ctx.fillRect(cabX + 14, cTop + 8, 4, 8);
+    // Color accent stripe along cab side
+    ctx.fillStyle = color;
+    ctx.fillRect(cabX, cTop + 27, cabW, 5);
+    // Grille panel (front face, right side of cab)
+    ctx.fillStyle = '#111';
+    ctx.fillRect(cabX + cabW - 7, cTop + 20, 7, 28);
+    // Grille slats
+    ctx.fillStyle = '#3a3a3a';
+    for (let i = 0; i < 5; i++) ctx.fillRect(cabX + cabW - 6, cTop + 22 + i * 5, 5, 2.5);
+    // Chrome front bumper
+    ctx.fillStyle = '#b0b0b0';
+    ctx.fillRect(cabX + cabW - 7, cBot - 4, 11, 5);
+    ctx.fillStyle = '#e0e0e0';
+    ctx.fillRect(cabX + cabW - 6, cBot - 5, 9, 3);
+    // Headlights
+    ctx.fillStyle = '#fffff0';
+    ctx.beginPath(); ctx.arc(cabX + cabW - 3, cTop + 35, 5, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#ffff88';
+    ctx.beginPath(); ctx.arc(cabX + cabW - 3, cTop + 35, 3, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,160,0.22)';
+    ctx.beginPath(); ctx.arc(cabX + cabW - 3, cTop + 35, 11, 0, Math.PI * 2); ctx.fill();
+    // Side mirror (left of cab)
+    ctx.fillStyle = '#666';
+    ctx.fillRect(cabX - 5, cTop + 10, 2, 9);
+    ctx.fillStyle = '#999';
+    ctx.fillRect(cabX - 8, cTop + 9, 5, 7);
+    // Fuel tank / step
+    ctx.fillStyle = '#555';
+    ctx.fillRect(cabX + 3, cBot - 10, 13, 10);
+    ctx.fillStyle = '#6a6a6a';
+    ctx.fillRect(cabX + 4, cBot - 9, 11, 8);
+    // Cab steer-axle wheel
+    const cabWx = cabX + 18;
+    ctx.fillStyle = '#141414';
+    ctx.beginPath(); ctx.arc(cabWx, wheelY, 11, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#c0c0c0';
+    ctx.beginPath(); ctx.arc(cabWx, wheelY, 6, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#707070';
+    ctx.beginPath(); ctx.arc(cabWx, wheelY, 3, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#d8d8d8';
+    for (let a = 0; a < 5; a++) {
+      const ang = (a / 5) * Math.PI * 2;
+      ctx.beginPath(); ctx.arc(cabWx + Math.cos(ang) * 4, wheelY + Math.sin(ang) * 4, 1, 0, Math.PI * 2); ctx.fill();
+    }
   }
 
   function endGame() {
