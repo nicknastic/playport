@@ -125,26 +125,164 @@ const JugglingGame = (() => {
   function render(ts) {
     const W = canvas.width, H = canvas.height;
 
-    // ── Pokemon GBA outdoor background ──
-    PS.drawSky(ctx, W, 0, 70);
-    PS.drawCloud(ctx, 55, 26, 0.7);
-    PS.drawCloud(ctx, 240, 16, 0.55);
-    PS.drawCloud(ctx, 390, 30, 0.65);
-    PS.drawGrass(ctx, W, H, 0, 65);
-    PS.drawTreeRow(ctx, W, 38, 28);
+    // ══ Circus Big Top Interior ══
 
-    // Fairy-light string
-    ctx.strokeStyle = '#8888aa'; ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(0, 68); ctx.lineTo(W, 68); ctx.stroke();
-    for (let i = 0; i < 12; i++) {
-      const lit = Math.sin(ts * 0.004 + i) > 0;
-      ctx.fillStyle = lit ? `hsl(${i*30},100%,65%)` : '#445566';
-      ctx.beginPath(); ctx.arc(i*(W/12) + W/24, 68, 4, 0, Math.PI*2); ctx.fill();
+    // Tent wall — alternating red & cream vertical stripes
+    const stripeW = Math.ceil(W / 12);
+    for (let i = 0; i < 13; i++) {
+      ctx.fillStyle = i % 2 === 0 ? '#cc1111' : '#fff0d0';
+      ctx.fillRect(i * stripeW, 0, stripeW + 1, H);
     }
 
-    // Ground strip
-    ctx.fillStyle = PS.PAL.grassMid;
-    ctx.fillRect(0, H - 7, W, 7);
+    // Bleacher seating (upper background)
+    ctx.fillStyle = '#6a0e0e';
+    ctx.fillRect(0, 72, W, 82);
+    ctx.fillStyle = '#4a0a0a';
+    ctx.fillRect(0, 72, W, 6);
+
+    // Audience heads
+    const headPal = ['#f5c87a','#d4956a','#e8c4a0','#c8866a','#8b5a2b','#f0d090'];
+    for (let row = 0; row < 3; row++) {
+      for (let col = 0; col < 16; col++) {
+        const hx = 14 + col * 30 + (row % 2 === 0 ? 0 : 15);
+        const hy = 88 + row * 22;
+        if (hx > W) continue;
+        ctx.fillStyle = headPal[(col * 3 + row) % headPal.length];
+        ctx.beginPath(); ctx.arc(hx, hy, 7, 0, Math.PI * 2); ctx.fill();
+        // Hair (dark top half)
+        ctx.fillStyle = ['#3a1a00','#111','#4a2800','#222'][(col + row) % 4];
+        ctx.beginPath(); ctx.arc(hx, hy - 2, 7, Math.PI, Math.PI * 2); ctx.fill();
+        // Occasional hat
+        if ((col + row * 5) % 7 === 0) {
+          ctx.fillStyle = '#cc1111';
+          ctx.fillRect(hx - 6, hy - 14, 12, 5);
+          ctx.fillRect(hx - 4, hy - 20, 8, 8);
+        }
+      }
+    }
+
+    // Ring divider rail
+    ctx.fillStyle = '#5a0808';
+    ctx.fillRect(0, 152, W, 10);
+    ctx.fillStyle = '#8b1010';
+    ctx.fillRect(0, 152, W, 4);
+
+    // Sawdust circus ring floor
+    ctx.fillStyle = '#c8a060';
+    ctx.fillRect(0, 162, W, H - 162);
+    // Sawdust texture (static pseudo-random dots)
+    ctx.fillStyle = '#b08848';
+    for (let i = 0; i < 55; i++) {
+      ctx.fillRect((i * 97 + 30) % (W - 6), 168 + (i * 67) % (H - 180), 5, 2);
+    }
+    ctx.fillStyle = '#d4b070';
+    for (let i = 0; i < 30; i++) {
+      ctx.fillRect((i * 137 + 60) % (W - 6), 172 + (i * 83) % (H - 186), 3, 2);
+    }
+
+    // Circus ring oval border (white dashes on floor)
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 2.5;
+    ctx.setLineDash([8, 5]);
+    ctx.beginPath();
+    ctx.ellipse(W / 2, H, W / 2 - 10, 28, 0, Math.PI, Math.PI * 2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // ── Tent poles (left & right) ──
+    ctx.fillStyle = '#6a2e08';
+    ctx.fillRect(14, 0, 13, H);
+    ctx.fillRect(W - 27, 0, 13, H);
+    // Gold rings on poles
+    ctx.fillStyle = '#ffd700';
+    for (let py = 28; py < H; py += 55) {
+      ctx.fillRect(12, py, 17, 7);
+      ctx.fillRect(W - 29, py, 17, 7);
+    }
+
+    // ── Ropes between poles (catenary curves) ──
+    ctx.strokeStyle = '#a09060';
+    ctx.lineWidth = 1.5;
+    [48, 98].forEach(baseY => {
+      ctx.beginPath();
+      for (let x = 27; x <= W - 27; x += 2) {
+        const t = (x - 27) / (W - 54);
+        const sag = 22 * (4 * t * (1 - t));
+        x === 27 ? ctx.moveTo(x, baseY + sag) : ctx.lineTo(x, baseY + sag);
+      }
+      ctx.stroke();
+    });
+
+    // ── Pennant flags on top rope ──
+    const pCols = ['#dd1010','#ffd700','#1040cc','#10aa20','#ff8800'];
+    for (let i = 0; i <= 10; i++) {
+      const t = i / 10;
+      const px = 27 + t * (W - 54);
+      const sag = 22 * (4 * t * (1 - t));
+      const py = 48 + sag;
+      ctx.fillStyle = pCols[i % 5];
+      ctx.beginPath();
+      ctx.moveTo(px - 9, py);
+      ctx.lineTo(px + 9, py);
+      ctx.lineTo(px, py + 18);
+      ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = 'rgba(0,0,0,0.25)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+
+    // ── Spotlights (from top corners, aimed at jester) ──
+    [
+      { sx: 80,     r: 255, g: 255, b: 200 },
+      { sx: W - 80, r: 255, g: 210, b: 255 }
+    ].forEach(({ sx, r, g, b }) => {
+      const tx = jester.x, ty = jester.y - 30;
+      const ang = Math.atan2(ty - 8, tx - sx);
+      const len = Math.hypot(tx - sx, ty - 8) + 80;
+      ctx.save();
+      ctx.translate(sx, 8);
+      ctx.rotate(ang);
+      const sg = ctx.createRadialGradient(0, 0, 5, 0, 0, len);
+      sg.addColorStop(0,   `rgba(${r},${g},${b},0.22)`);
+      sg.addColorStop(0.6, `rgba(${r},${g},${b},0.05)`);
+      sg.addColorStop(1,   `rgba(${r},${g},${b},0)`);
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.arc(0, 0, len, -0.24, 0.24);
+      ctx.closePath();
+      ctx.fillStyle = sg;
+      ctx.fill();
+      ctx.restore();
+      // Spotlight pool on floor
+      ctx.fillStyle = `rgba(${r},${g},${b},0.12)`;
+      ctx.beginPath();
+      ctx.ellipse(tx, jester.y + 18, 38, 12, 0, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    // ── Scalloped top valance (circus tent edge) ──
+    ctx.fillStyle = '#cc1111';
+    ctx.fillRect(0, 0, W, 16);
+    const scW = 32;
+    for (let x = 0; x < W; x += scW) {
+      ctx.fillStyle = Math.floor(x / scW) % 2 === 0 ? '#cc1111' : '#ffd700';
+      ctx.beginPath();
+      ctx.arc(x + scW / 2, 16, scW / 2, 0, Math.PI);
+      ctx.fill();
+    }
+
+    // ── Animated coloured lights string ──
+    ctx.strokeStyle = '#4a4060'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(0, 110); ctx.lineTo(W, 110); ctx.stroke();
+    for (let i = 0; i < 13; i++) {
+      const lit = Math.sin(ts * 0.005 + i * 0.9) > 0;
+      ctx.fillStyle = lit ? `hsl(${i * 28},100%,62%)` : '#1a1628';
+      ctx.beginPath(); ctx.arc(i * (W / 13) + W / 26, 110, 4.5, 0, Math.PI * 2); ctx.fill();
+    }
+
+    // Ground floor strip at very bottom
+    ctx.fillStyle = '#b08040';
+    ctx.fillRect(0, H - 6, W, 6);
 
     // ── Pokemon dialog HUD ──
     PS.dialogBox(ctx, 6, 76, 148, 36);
