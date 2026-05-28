@@ -14,22 +14,22 @@ const JugglingGame = (() => {
       legPhase: 0, bodyBob: 0, armL: 0, armR: 0,
       moving: 0   // -1 left, 0 still, 1 right
     };
-    balls = [spawnBall()];
+    balls = [spawnBall(true)];
 
     window.addEventListener('keydown', onKey);
     window.addEventListener('keyup', offKey);
     raf = requestAnimationFrame(loop);
   }
 
-  function spawnBall() {
+  function spawnBall(isFirst = false) {
     // First ball always drops from centre; extras pick a random top zone
     const zones = [
       { x: canvas.width * 0.18, vx:  18 },   // top-left
       { x: canvas.width * 0.50, vx:   0 },   // top-centre
       { x: canvas.width * 0.82, vx: -18 },   // top-right
     ];
-    const zone = balls.length === 0
-      ? zones[1]                                      // first ball: centre
+    const zone = isFirst
+      ? zones[1]                                       // first ball: centre
       : zones[Math.floor(Math.random() * zones.length)]; // extras: random
 
     return {
