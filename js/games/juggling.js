@@ -22,21 +22,16 @@ const JugglingGame = (() => {
   }
 
   function spawnBall(isFirst = false) {
-    // First ball always drops from centre; extras pick a random top zone
-    const zones = [
-      { x: canvas.width * 0.18, vx:  18 },   // top-left
-      { x: canvas.width * 0.50, vx:   0 },   // top-centre
-      { x: canvas.width * 0.82, vx: -18 },   // top-right
-    ];
-    const zone = isFirst
-      ? zones[1]                                       // first ball: centre
-      : zones[Math.floor(Math.random() * zones.length)]; // extras: random
+    // Spawn directly above the jester so the ball is always reachable
+    const spawnX = isFirst
+      ? canvas.width / 2
+      : jester.x + (Math.random() - 0.5) * 40;  // slight random spread but stays near player
 
     return {
-      x: zone.x + (Math.random() - 0.5) * 20,
-      y: 60,
-      vx: zone.vx + (Math.random() - 0.5) * 10,
-      vy: 0,
+      x: Math.max(20, Math.min(canvas.width - 20, spawnX)),
+      y: jester.y - 100,   // just above the jester's head
+      vx: (Math.random() - 0.5) * 20,
+      vy: -60,             // small upward nudge so it arcs naturally before falling
       r: 13,
       color: `hsl(${Math.random()*360},80%,60%)`,
       trail: []
