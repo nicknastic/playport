@@ -10,143 +10,161 @@
 </head>
 <body>
 
-  <!-- ══ GAMEBOY DEVICE SHELL ══ -->
-  <div class="gbc-device">
+  <!-- ══ OUTER LAYOUT: rack beside device ══ -->
+  <div class="playport-layout">
 
-    <!-- Top label -->
-    <div class="gbc-top-label">DOT MATRIX WITH STEREO SOUND</div>
-
-    <!-- Screen bezel -->
-    <div class="gbc-bezel">
-      <div class="gbc-power-row">
-        <span class="gbc-power-dot"></span>
-        <span class="gbc-power-text">BATTERY</span>
-      </div>
-
-      <!-- ══ ALL APP SCREENS LIVE INSIDE THE GBC SCREEN ══ -->
-      <div class="gbc-screen">
-
-        <!-- BOOT SCREEN -->
-        <div id="screen-boot" class="screen active">
-          <div class="boot-inner">
-            <div class="boot-logo">PLAYPORT</div>
-            <div class="boot-sub">That&#39;s the name of the game</div>
-            <div class="boot-buttons">
-              <button class="btn" id="btn-play">▶ PLAY</button>
-              <button class="btn btn-secondary" id="btn-settings-boot">⚙ SETTINGS</button>
-              <button class="btn btn-danger" id="btn-quit">✕ QUIT</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- MAIN MENU -->
-        <div id="screen-menu" class="screen">
-          <div class="menu-header">
-            <button class="btn-small" id="btn-back-menu">◀ BACK</button>
-            <h2 class="menu-title">SELECT CARTRIDGE</h2>
-            <div class="token-display">🪙 <span id="token-count">0</span></div>
-          </div>
-          <div class="cartridge-grid" id="cartridge-grid"></div>
-        </div>
-
-        <!-- SETTINGS SCREEN -->
-        <div id="screen-settings" class="screen">
-          <div class="settings-inner">
-            <h2 class="menu-title">SETTINGS</h2>
-            <div class="setting-row">
-              <label>SOUND</label>
-              <input type="range" id="setting-sound" min="0" max="100" value="80">
-              <span id="sound-val">80</span>
-            </div>
-            <div class="setting-row">
-              <label>SCREEN SIZE</label>
-              <select id="setting-screen">
-                <option value="small">SMALL</option>
-                <option value="medium" selected>MEDIUM</option>
-                <option value="large">LARGE</option>
-              </select>
-            </div>
-            <div class="setting-row">
-              <label>PERFORMANCE</label>
-              <select id="setting-perf">
-                <option value="low">LOW</option>
-                <option value="high" selected>HIGH</option>
-              </select>
-            </div>
-            <div class="setting-row">
-              <button class="btn btn-danger" id="btn-reset-tokens">RESET PROGRESS</button>
-            </div>
-            <button class="btn" id="btn-back-settings">◀ BACK</button>
-          </div>
-        </div>
-
-        <!-- GAME SCREEN -->
-        <div id="screen-game" class="screen">
-          <div class="game-header">
-            <button class="btn-small" id="btn-back-game">◀ QUIT</button>
-            <span class="game-title-display" id="game-title-display"></span>
-            <div class="token-display">🪙 <span id="game-token-count">0</span></div>
-          </div>
-          <div class="canvas-wrapper">
-            <canvas id="game-canvas" width="480" height="400"></canvas>
-          </div>
-          <div class="controls-hint" id="controls-hint"></div>
-        </div>
-
-      </div><!-- /gbc-screen -->
-
-      <!-- Screen glare overlay -->
-      <div class="gbc-glare"></div>
-    </div><!-- /gbc-bezel -->
-
-    <!-- ══ CONTROLS AREA ══ -->
-    <div class="gbc-controls">
-
-      <!-- D-Pad -->
-      <div class="gbc-dpad">
-        <div class="dpad-row"><div class="dpad-up"></div></div>
-        <div class="dpad-row dpad-mid">
-          <div class="dpad-left"></div>
-          <div class="dpad-center"></div>
-          <div class="dpad-right"></div>
-        </div>
-        <div class="dpad-row"><div class="dpad-down"></div></div>
-      </div>
-
-      <!-- Start / Select -->
-      <div class="gbc-mid-btns">
-        <div class="gbc-oval-btn">
-          <span>SELECT</span>
-        </div>
-        <div class="gbc-oval-btn">
-          <span>START</span>
-        </div>
-      </div>
-
-      <!-- A / B buttons -->
-      <div class="gbc-ab">
-        <div class="gbc-b-btn"></div>
-        <div class="gbc-a-btn"></div>
-      </div>
-
-    </div><!-- /gbc-controls -->
-
-    <!-- Speaker grille -->
-    <div class="gbc-speaker">
-      <div class="speaker-dots">
-        <span></span><span></span><span></span><span></span><span></span><span></span>
-        <span></span><span></span><span></span><span></span><span></span><span></span>
-        <span></span><span></span><span></span><span></span><span></span><span></span>
-        <span></span><span></span><span></span><span></span><span></span><span></span>
-      </div>
+    <!-- CARTRIDGE RACK (visible while on menu screen) -->
+    <div id="cartridge-rack" class="cart-rack hidden">
+      <div class="rack-title">GAMES</div>
+      <div class="rack-grid" id="rack-grid"></div>
+      <div class="rack-hint">drag to slot ▶</div>
     </div>
 
-    <!-- Bottom brand label -->
-    <div class="gbc-brand">Nintendo <strong>GAME BOY</strong><sup>™</sup></div>
+    <!-- ══ GAMEBOY DEVICE SHELL ══ -->
+    <div class="gbc-device">
 
-  </div><!-- /gbc-device -->
+      <!-- Cartridge slot cut into top of device -->
+      <div id="cartridge-slot" class="cart-slot hidden">
+        <span class="slot-label">▼ INSERT CARTRIDGE</span>
+      </div>
 
-  <!-- UNLOCK MODAL (outside device so it overlays everything) -->
+      <!-- Top label -->
+      <div class="gbc-top-label">DOT MATRIX WITH STEREO SOUND</div>
+
+      <!-- Screen bezel -->
+      <div class="gbc-bezel">
+        <div class="gbc-power-row">
+          <span class="gbc-power-dot"></span>
+          <span class="gbc-power-text">BATTERY</span>
+        </div>
+
+        <!-- ══ ALL APP SCREENS LIVE INSIDE THE GBC SCREEN ══ -->
+        <div class="gbc-screen">
+
+          <!-- BOOT SCREEN -->
+          <div id="screen-boot" class="screen active">
+            <div class="boot-inner">
+              <div class="boot-logo">PLAYPORT</div>
+              <div class="boot-sub">That&#39;s the name of the game</div>
+              <div class="boot-buttons">
+                <button class="btn" id="btn-play">▶ PLAY</button>
+                <button class="btn btn-secondary" id="btn-settings-boot">⚙ SETTINGS</button>
+                <button class="btn btn-danger" id="btn-quit">✕ QUIT</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- MENU — waiting for cartridge insertion -->
+          <div id="screen-menu" class="screen">
+            <div class="insert-idle">
+              <div class="insert-arrow">▲</div>
+              <div class="insert-title">INSERT<br>CARTRIDGE</div>
+              <div class="insert-hint">← drag from rack</div>
+              <div class="insert-tokens">🪙 <span id="token-count">0</span></div>
+              <button class="btn-small" id="btn-back-menu">◀ BACK</button>
+            </div>
+          </div>
+
+          <!-- SETTINGS SCREEN -->
+          <div id="screen-settings" class="screen">
+            <div class="settings-inner">
+              <h2 class="menu-title">SETTINGS</h2>
+              <div class="setting-row">
+                <label>SOUND</label>
+                <input type="range" id="setting-sound" min="0" max="100" value="80">
+                <span id="sound-val">80</span>
+              </div>
+              <div class="setting-row">
+                <label>SCREEN SIZE</label>
+                <select id="setting-screen">
+                  <option value="small">SMALL</option>
+                  <option value="medium" selected>MEDIUM</option>
+                  <option value="large">LARGE</option>
+                </select>
+              </div>
+              <div class="setting-row">
+                <label>PERFORMANCE</label>
+                <select id="setting-perf">
+                  <option value="low">LOW</option>
+                  <option value="high" selected>HIGH</option>
+                </select>
+              </div>
+              <div class="setting-row">
+                <button class="btn btn-danger" id="btn-reset-tokens">RESET PROGRESS</button>
+              </div>
+              <button class="btn" id="btn-back-settings">◀ BACK</button>
+            </div>
+          </div>
+
+          <!-- GAME SCREEN -->
+          <div id="screen-game" class="screen">
+            <div class="game-header">
+              <button class="btn-small" id="btn-back-game">◀ QUIT</button>
+              <span class="game-title-display" id="game-title-display"></span>
+              <div class="token-display">🪙 <span id="game-token-count">0</span></div>
+            </div>
+            <div class="canvas-wrapper">
+              <canvas id="game-canvas" width="480" height="400"></canvas>
+            </div>
+            <div class="controls-hint" id="controls-hint"></div>
+          </div>
+
+        </div><!-- /gbc-screen -->
+
+        <!-- Screen glare overlay -->
+        <div class="gbc-glare"></div>
+      </div><!-- /gbc-bezel -->
+
+      <!-- ══ CONTROLS AREA ══ -->
+      <div class="gbc-controls">
+
+        <!-- D-Pad -->
+        <div class="gbc-dpad">
+          <div class="dpad-row"><div class="dpad-up"></div></div>
+          <div class="dpad-row dpad-mid">
+            <div class="dpad-left"></div>
+            <div class="dpad-center"></div>
+            <div class="dpad-right"></div>
+          </div>
+          <div class="dpad-row"><div class="dpad-down"></div></div>
+        </div>
+
+        <!-- Start / Select -->
+        <div class="gbc-mid-btns">
+          <div class="gbc-oval-btn">
+            <span>SELECT</span>
+          </div>
+          <div class="gbc-oval-btn">
+            <span>START</span>
+          </div>
+        </div>
+
+        <!-- A / B buttons -->
+        <div class="gbc-ab">
+          <div class="gbc-b-btn"></div>
+          <div class="gbc-a-btn"></div>
+        </div>
+
+      </div><!-- /gbc-controls -->
+
+      <!-- Speaker grille -->
+      <div class="gbc-speaker">
+        <div class="speaker-dots">
+          <span></span><span></span><span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+      </div>
+
+      <!-- Bottom brand label -->
+      <div class="gbc-brand">Nintendo <strong>GAME BOY</strong><sup>™</sup></div>
+
+    </div><!-- /gbc-device -->
+
+  </div><!-- /playport-layout -->
+
+  <!-- UNLOCK MODAL (outside layout so it overlays everything) -->
   <div id="unlock-modal" class="modal-overlay hidden">
     <div class="modal-box">
       <div class="modal-title" id="modal-title">LOCKED</div>
