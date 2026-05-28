@@ -573,7 +573,7 @@ html, body {
 
 /* ══ CARTRIDGE RACK ══ */
 .cart-rack {
-  width: 168px;
+  width: 210px;
   margin-top: 36px;          /* visually align with device screen area */
   background: linear-gradient(180deg, #4a2e10, #2a1606);
   border-radius: 8px;
@@ -608,8 +608,8 @@ html, body {
 
 /* Individual cartridge in the rack */
 .cart-item {
-  width: 70px;
-  height: 86px;
+  width: 88px;
+  height: 110px;
   border-radius: 3px 3px 7px 7px;
   position: relative;
   cursor: grab;
@@ -632,9 +632,9 @@ html, body {
   position: absolute;
   top: 0; left: 50%;
   transform: translateX(-50%);
-  width: 28px; height: 7px;
+  width: 36px; height: 9px;
   background: rgba(0,0,0,0.85);
-  border-radius: 0 0 5px 5px;
+  border-radius: 0 0 6px 6px;
   z-index: 2;
 }
 
@@ -642,8 +642,8 @@ html, body {
   position: absolute;
   bottom: 0; left: 0; right: 0;
   background: rgba(0,0,0,0.72);
-  padding: 2px 3px 3px;
-  font-size: 0.15rem;
+  padding: 3px 4px 4px;
+  font-size: 0.19rem;
   color: #fff;
   text-align: center;
   line-height: 1.6;
@@ -682,9 +682,9 @@ html, body {
   position: absolute;
   top: 0; left: 50%;
   transform: translateX(-50%);
-  width: 28px; height: 7px;
+  width: 36px; height: 9px;
   background: rgba(0,0,0,0.85);
-  border-radius: 0 0 5px 5px;
+  border-radius: 0 0 6px 6px;
   z-index: 2;
 }
 
