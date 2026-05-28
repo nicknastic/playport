@@ -27,20 +27,18 @@ const TileSortingGame = (() => {
     return arr;
   }
 
-  // ── Random tile count 3-7, gets a little harder each level ──
-  function randomTileCount() {
-    const min = Math.min(3 + Math.floor(level / 3), 5);
-    const max = Math.min(min + 3, 7);
-    return min + Math.floor(Math.random() * (max - min + 1));
+  // ── Tile count grows by 1 each level, starting at 3, capped at 9 ──
+  function tileCount() {
+    return Math.min(2 + level, 9);
   }
 
   function buildLevel() {
     levelComplete = false;
     completePause = 0;
-    const n = randomTileCount();
+    const n = tileCount();
 
-    // Timer: more tiles = more time; shrinks slightly with level
-    roundTime = Math.max(10, n * 7 + Math.floor(Math.random() * 6) - Math.floor(level * 0.4));
+    // Fixed 15-second timer every round
+    roundTime = 15;
     timeLeft = roundTime;
 
     // ── Slots: spread across top, numbers in RANDOM order ──
