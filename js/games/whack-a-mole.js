@@ -123,11 +123,18 @@ const WhackAMoleGame = (() => {
 
     // Hole + mole
     holes.forEach((h, i) => {
-      // Hole shadow / dirt
-      ctx.fillStyle = '#1a0d00';
-      ctx.beginPath(); ctx.ellipse(h.x, h.y, 26, 14, 0, 0, Math.PI*2); ctx.fill();
-      ctx.fillStyle = '#3d2200';
-      ctx.beginPath(); ctx.ellipse(h.x, h.y, 22, 11, 0, 0, Math.PI*2); ctx.fill();
+      // Dirt mound behind hole
+      ctx.fillStyle = '#5a3a18';
+      ctx.beginPath(); ctx.ellipse(h.x, h.y + 4, 32, 16, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#7a5228';
+      ctx.beginPath(); ctx.ellipse(h.x - 6, h.y + 2, 14, 8, -0.3, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#8a6030';
+      ctx.beginPath(); ctx.ellipse(h.x + 8, h.y + 3, 10, 6, 0.4, 0, Math.PI * 2); ctx.fill();
+      // Dark hole opening
+      ctx.fillStyle = '#100800';
+      ctx.beginPath(); ctx.ellipse(h.x, h.y, 24, 12, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#1e1008';
+      ctx.beginPath(); ctx.ellipse(h.x, h.y, 20, 9, 0, 0, Math.PI * 2); ctx.fill();
 
       // Highlight selected hole
       if (i === gardener.holeIdx) {
@@ -217,26 +224,78 @@ const WhackAMoleGame = (() => {
 
   function drawMole(x, y, visible) {
     if (!visible) return;
-    // Body
-    ctx.fillStyle = '#8B6914';
-    ctx.beginPath(); ctx.ellipse(x, y, 18, 22, 0, 0, Math.PI*2); ctx.fill();
-    // Face
-    ctx.fillStyle = '#c49a3c';
-    ctx.beginPath(); ctx.ellipse(x, y - 6, 12, 14, 0, 0, Math.PI*2); ctx.fill();
-    // Eyes
-    ctx.fillStyle = '#222';
-    ctx.beginPath(); ctx.arc(x - 5, y - 8, 3, 0, Math.PI*2); ctx.fill();
-    ctx.beginPath(); ctx.arc(x + 5, y - 8, 3, 0, Math.PI*2); ctx.fill();
-    ctx.fillStyle = '#fff';
-    ctx.beginPath(); ctx.arc(x - 4, y - 9, 1, 0, Math.PI*2); ctx.fill();
-    ctx.beginPath(); ctx.arc(x + 6, y - 9, 1, 0, Math.PI*2); ctx.fill();
-    // Nose
-    ctx.fillStyle = '#ff8888';
-    ctx.beginPath(); ctx.arc(x, y - 4, 3.5, 0, Math.PI*2); ctx.fill();
-    // Claws
-    ctx.fillStyle = '#8B6914';
-    ctx.fillRect(x - 22, y + 2, 6, 8);
-    ctx.fillRect(x + 16, y + 2, 6, 8);
+
+    // ── Dark velvety body ──
+    ctx.fillStyle = '#28282e';
+    ctx.beginPath(); ctx.ellipse(x, y + 4, 20, 22, 0, 0, Math.PI * 2); ctx.fill();
+
+    // Fur sheen — subtle highlight on shoulder
+    ctx.fillStyle = '#38383e';
+    ctx.beginPath(); ctx.ellipse(x - 5, y - 4, 11, 10, -0.4, 0, Math.PI * 2); ctx.fill();
+
+    // ── Head ──
+    ctx.fillStyle = '#28282e';
+    ctx.beginPath(); ctx.ellipse(x, y - 14, 13, 12, 0, 0, Math.PI * 2); ctx.fill();
+
+    // ── Elongated pink snout (pointing slightly up-left like in photo) ──
+    ctx.fillStyle = '#d07070';
+    ctx.beginPath(); ctx.ellipse(x + 2, y - 24, 6, 8, 0.2, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#e89090';
+    ctx.beginPath(); ctx.ellipse(x + 2, y - 27, 4, 5, 0.2, 0, Math.PI * 2); ctx.fill();
+    // Nostrils
+    ctx.fillStyle = '#a03030';
+    ctx.beginPath(); ctx.arc(x - 0.5, y - 28, 1.2, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(x + 3.5, y - 26, 1.2, 0, Math.PI * 2); ctx.fill();
+
+    // ── Tiny vestigial eyes (almost hidden like real moles) ──
+    ctx.fillStyle = '#1a1a1a';
+    ctx.beginPath(); ctx.arc(x - 8, y - 17, 1.8, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(x + 6, y - 18, 1.8, 0, Math.PI * 2); ctx.fill();
+
+    // ── Large wide paddle paws with spread digits ──
+    // Left paw - big, cream/pinkish, spread wide
+    ctx.fillStyle = '#c8a880';
+    ctx.beginPath(); ctx.ellipse(x - 23, y + 2, 12, 7, -0.5, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#ddc4a0';
+    // Left fingers fanned out
+    const leftFingers = [[-32, -6, -0.7], [-30, -2, -0.4], [-28, 1, -0.1], [-26, 3, 0.2]];
+    leftFingers.forEach(([dx, dy, ang]) => {
+      ctx.save();
+      ctx.translate(x + dx, y + dy);
+      ctx.rotate(ang);
+      ctx.beginPath(); ctx.ellipse(0, 0, 3, 6, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+    });
+
+    // Right paw - mirrored
+    ctx.fillStyle = '#c8a880';
+    ctx.beginPath(); ctx.ellipse(x + 23, y + 2, 12, 7, 0.5, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#ddc4a0';
+    const rightFingers = [[26, -6, 0.7], [28, -2, 0.4], [30, 1, 0.1], [31, 3, -0.2]];
+    rightFingers.forEach(([dx, dy, ang]) => {
+      ctx.save();
+      ctx.translate(x + dx, y + dy);
+      ctx.rotate(ang);
+      ctx.beginPath(); ctx.ellipse(0, 0, 3, 6, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+    });
+
+    // Claw tips on fingers
+    ctx.fillStyle = '#b09070';
+    leftFingers.forEach(([dx, dy, ang]) => {
+      ctx.save();
+      ctx.translate(x + dx, y + dy - 5);
+      ctx.rotate(ang);
+      ctx.beginPath(); ctx.ellipse(0, 0, 2, 3, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+    });
+    rightFingers.forEach(([dx, dy, ang]) => {
+      ctx.save();
+      ctx.translate(x + dx, y + dy - 5);
+      ctx.rotate(ang);
+      ctx.beginPath(); ctx.ellipse(0, 0, 2, 3, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+    });
   }
 
   function drawFlower(x, y, color) {
