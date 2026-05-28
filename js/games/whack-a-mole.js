@@ -146,7 +146,7 @@ const WhackAMoleGame = (() => {
       // Mole
       if (h.mole) {
         const progress = h.mole.popped ? 1 : (1 - h.mole.timer / h.mole.maxTimer) / 0.3;
-        const popY = h.y - 40 * Math.min(1, progress);
+        const popY = h.y - 18 * Math.min(1, progress);
         drawMole(h.x, popY, h.mole.popped);
       }
     });
