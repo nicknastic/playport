@@ -98,8 +98,8 @@ const MoonLandingGame = (() => {
   }
 
   function render(ts) {
-    // Space background
-    ctx.fillStyle = '#000010';
+    // Space background (Pokemon GBA space palette)
+    ctx.fillStyle = PS.PAL.spaceDeep;
     ctx.fillRect(0, 0, W, H);
 
     // Stars
@@ -111,9 +111,9 @@ const MoonLandingGame = (() => {
 
     // Moon (destination)
     const moonDrawY = H/2 - 50 - (H/2 - 50 + 200) * (1 - Math.min(1, moonY / (H/2 - 50)));
-    ctx.fillStyle = '#e0d8b0';
+    ctx.fillStyle = PS.PAL.moonSurface;
     ctx.beginPath(); ctx.arc(W/2, moonDrawY, 55, 0, Math.PI*2); ctx.fill();
-    ctx.fillStyle = '#c8c0a0';
+    ctx.fillStyle = PS.PAL.moonCrater;
     [[0,8,12],[20,-12,8],[-18,4,6],[8,22,5]].forEach(([dx,dy,r]) => {
       ctx.beginPath(); ctx.arc(W/2+dx, moonDrawY+dy, r, 0, Math.PI*2); ctx.fill();
     });
@@ -188,15 +188,19 @@ const MoonLandingGame = (() => {
     ctx.beginPath(); ctx.moveTo(rx - 12, ry + 18); ctx.lineTo(rx - 22, ry + 28); ctx.lineTo(rx - 12, ry + 10); ctx.closePath(); ctx.fill();
     ctx.beginPath(); ctx.moveTo(rx + 12, ry + 18); ctx.lineTo(rx + 22, ry + 28); ctx.lineTo(rx + 12, ry + 10); ctx.closePath(); ctx.fill();
 
-    // HUD
-    ctx.fillStyle = '#9bbc0f';
-    ctx.font = '10px "Press Start 2P"';
-    ctx.fillText('SCORE: ' + Math.floor(score), 10, 24);
-    ctx.fillStyle = '#f1c40f';
-    ctx.fillText('🪙 ' + Math.floor(score/100), W - 80, 24);
-    ctx.fillStyle = '#88aaff';
+    // HUD (Pokemon dialog style)
+    PS.dialogBox(ctx, 4, 4, 150, 30);
+    ctx.fillStyle = PS.PAL.uiText;
     ctx.font = '8px "Press Start 2P"';
-    ctx.fillText('CLICK = SHOOT', W/2 - 55, H - 12);
+    ctx.fillText('SCORE: ' + Math.floor(score), 10, 24);
+    PS.dialogBox(ctx, W - 90, 4, 86, 30);
+    ctx.fillStyle = '#b07800';
+    ctx.font = '8px "Press Start 2P"';
+    ctx.fillText('🪙 ' + Math.floor(score/100), W - 84, 24);
+    PS.dialogBox(ctx, W/2 - 70, H - 26, 140, 22);
+    ctx.fillStyle = '#4444aa';
+    ctx.font = '6px "Press Start 2P"';
+    ctx.fillText('CLICK = SHOOT  A/D = MOVE', W/2 - 66, H - 10);
   }
 
   function endGame(won = false) {

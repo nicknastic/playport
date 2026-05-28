@@ -124,31 +124,34 @@ const JugglingGame = (() => {
 
   function render(ts) {
     const W = canvas.width, H = canvas.height;
-    ctx.fillStyle = '#0f1a00';
-    ctx.fillRect(0, 0, W, H);
 
-    // Carnival tent stripes top
-    for (let i = 0; i < 12; i++) {
-      ctx.fillStyle = i % 2 === 0 ? '#1a0a00' : '#0f1a00';
-      ctx.fillRect(i * (W/12), 0, W/12, 30);
-    }
+    // ── Pokemon GBA outdoor background ──
+    PS.drawSky(ctx, W, 0, 70);
+    PS.drawCloud(ctx, 55, 26, 0.7);
+    PS.drawCloud(ctx, 240, 16, 0.55);
+    PS.drawCloud(ctx, 390, 30, 0.65);
+    PS.drawGrass(ctx, W, H, 0, 65);
+    PS.drawTreeRow(ctx, W, 38, 28);
 
-    // Decorative lights
+    // Fairy-light string
+    ctx.strokeStyle = '#8888aa'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(0, 68); ctx.lineTo(W, 68); ctx.stroke();
     for (let i = 0; i < 12; i++) {
       const lit = Math.sin(ts * 0.004 + i) > 0;
-      ctx.fillStyle = lit ? `hsl(${i*30},100%,60%)` : '#333';
-      ctx.beginPath(); ctx.arc(i*(W/12) + W/24, 20, 5, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = lit ? `hsl(${i*30},100%,65%)` : '#445566';
+      ctx.beginPath(); ctx.arc(i*(W/12) + W/24, 68, 4, 0, Math.PI*2); ctx.fill();
     }
 
-    // Score
-    ctx.fillStyle = '#9bbc0f';
-    ctx.font = '10px "Press Start 2P"';
-    ctx.fillText('SCORE: ' + Math.floor(score), 10, 52);
-    ctx.fillText('BALLS: ' + balls.length, 10, 68);
+    // Ground strip
+    ctx.fillStyle = PS.PAL.grassMid;
+    ctx.fillRect(0, H - 7, W, 7);
 
-    // Ground
-    ctx.fillStyle = '#1a4a00';
-    ctx.fillRect(0, H - 6, W, 6);
+    // ── Pokemon dialog HUD ──
+    PS.dialogBox(ctx, 6, 76, 148, 36);
+    ctx.fillStyle = PS.PAL.uiText;
+    ctx.font = '7px "Press Start 2P"';
+    ctx.fillText('SCORE: ' + Math.floor(score), 13, 90);
+    ctx.fillText('BALLS: ' + balls.length, 13, 104);
 
     // ── Ball trails & arrows ──
     balls.forEach(b => {

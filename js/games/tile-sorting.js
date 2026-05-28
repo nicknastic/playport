@@ -178,22 +178,28 @@ const TileSortingGame = (() => {
   }
 
   function render(ts) {
-    ctx.fillStyle = '#001208';
-    ctx.fillRect(0, 0, W, H);
+    // Pokemon GBA indoor background
+    PS.drawIndoorFloor(ctx, W, H, 0);
+    ctx.fillStyle = PS.PAL.indoorWall;
+    ctx.fillRect(0, 0, W, 56);
+    ctx.fillStyle = '#8090b8';
+    ctx.fillRect(0, 54, W, 6);
 
-    // ── Header ──
-    ctx.fillStyle = '#9bbc0f';
-    ctx.font = '10px "Press Start 2P"';
-    ctx.fillText('TILE SORTING', W / 2 - 70, 28);
-    ctx.font = '7px "Press Start 2P"';
-    ctx.fillStyle = '#668844';
+    // ── Header HUD ──
+    PS.dialogBox(ctx, 4, 4, 130, 46);
+    ctx.fillStyle = PS.PAL.uiText;
+    ctx.font = '9px "Press Start 2P"';
+    ctx.fillText('TILE SORT', 10, 20);
+    ctx.font = '6px "Press Start 2P"';
+    ctx.fillStyle = '#666';
     const n = slots.length;
-    ctx.fillText('Level ' + level + '  |  ' + n + ' tiles', W / 2 - 58, 44);
+    ctx.fillText('Lv' + level + ' | ' + n + ' tiles', 10, 36);
 
     // Score
-    ctx.fillStyle = '#f1c40f';
+    PS.dialogBox(ctx, W - 94, 4, 90, 30);
+    ctx.fillStyle = '#b07800';
     ctx.font = '9px "Press Start 2P"';
-    ctx.fillText('🪙 ' + Math.floor(score / 10), 10, 28);
+    ctx.fillText('🪙 ' + Math.floor(score / 10), W - 88, 24);
 
     // ── Timer ──
     const timerRatio = timeLeft / roundTime;

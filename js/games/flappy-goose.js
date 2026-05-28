@@ -81,13 +81,8 @@ const FlappyGooseGame = (() => {
   }
 
   function render(ts) {
-    // ── Sky gradient ──
-    const sky = ctx.createLinearGradient(0, 0, 0, H);
-    sky.addColorStop(0,   '#4488cc');
-    sky.addColorStop(0.5, '#77bbee');
-    sky.addColorStop(1,   '#aaddff');
-    ctx.fillStyle = sky;
-    ctx.fillRect(0, 0, W, H);
+    // ── Pokemon GBA sky ──
+    PS.drawSky(ctx, W, 0, H);
 
     // ── Sun ──
     const sunX = W - 70, sunY = 55;
@@ -111,15 +106,15 @@ const FlappyGooseGame = (() => {
 
     // ── Far mountains (very slow parallax) ──
     const mOff = bgOffset * 0.08;
-    ctx.fillStyle = '#7aa8cc';
+    ctx.fillStyle = '#8898b0';
     drawMountainRange(mOff, GROUND_Y - 80, 180, 8, 0.6);
 
     // ── Mid hills (medium parallax) ──
-    ctx.fillStyle = '#5a9944';
+    ctx.fillStyle = PS.PAL.grassMid;
     drawHillRange(bgOffset * 0.2, GROUND_Y - 45, 220, 5, 0.55);
 
     // ── Near rolling hills ──
-    ctx.fillStyle = '#3a7a22';
+    ctx.fillStyle = PS.PAL.treeBase;
     drawHillRange(bgOffset * 0.45, GROUND_Y - 22, 160, 6, 0.65);
 
     // ── Scrolling clouds ──
@@ -127,7 +122,7 @@ const FlappyGooseGame = (() => {
 
     // ── Distant pond ──
     const pondX = ((-bgOffset * 0.15) % (W + 200)) - 100;
-    ctx.fillStyle = '#44aadd';
+    ctx.fillStyle = PS.PAL.water;
     ctx.beginPath();
     ctx.ellipse(pondX + 120, GROUND_Y - 6, 70, 10, 0, 0, Math.PI * 2);
     ctx.fill();
@@ -138,16 +133,16 @@ const FlappyGooseGame = (() => {
 
     // ── Ground layers ──
     // Dirt
-    ctx.fillStyle = '#7a5530';
+    ctx.fillStyle = PS.PAL.pathDark;
     ctx.fillRect(0, GROUND_Y + 8, W, H - GROUND_Y - 8);
     // Grass strip
     const grassGrad = ctx.createLinearGradient(0, GROUND_Y - 4, 0, GROUND_Y + 10);
-    grassGrad.addColorStop(0, '#44aa22');
-    grassGrad.addColorStop(1, '#2d7a10');
+    grassGrad.addColorStop(0, PS.PAL.grassLight);
+    grassGrad.addColorStop(1, PS.PAL.grassMid);
     ctx.fillStyle = grassGrad;
     ctx.fillRect(0, GROUND_Y - 4, W, 14);
     // Grass tufts scrolling
-    ctx.fillStyle = '#55cc33';
+    ctx.fillStyle = PS.PAL.treeTip;
     for (let gx = (-bgOffset % 40); gx < W + 40; gx += 40) {
       ctx.beginPath();
       ctx.moveTo(gx,     GROUND_Y - 4);
@@ -171,23 +166,28 @@ const FlappyGooseGame = (() => {
     // ── Goose ──
     if (!gameOver || started) drawGoose(goose.x, goose.y, goose.wing);
 
-    // ── Score ──
-    // Drop shadow for readability
-    ctx.fillStyle = 'rgba(0,0,0,0.4)';
+    // ── Score HUD (Pokemon dialog style) ──
+    PS.dialogBox(ctx, W/2 - 38, 6, 76, 30);
+    ctx.fillStyle = PS.PAL.uiText;
     ctx.font = '14px "Press Start 2P"';
-    ctx.fillText(score, W/2 - 6, 38);
-    ctx.fillStyle = '#fff';
-    ctx.fillText(score, W/2 - 8, 36);
+    ctx.fillText(score, W/2 - (score >= 10 ? 10 : 5), 28);
+
+    // Coin display
+    PS.dialogBox(ctx, 6, 6, 90, 26);
+    ctx.fillStyle = '#b07800';
+    ctx.font = '8px "Press Start 2P"';
+    ctx.fillText('🪙 ' + Math.floor(score / 5), 12, 24);
 
     if (!started) {
       ctx.fillStyle = 'rgba(0,30,60,0.55)';
       ctx.fillRect(0, 0, W, H);
-      ctx.fillStyle = '#fff';
-      ctx.font = '12px "Press Start 2P"';
-      ctx.fillText('PRESS W TO START', W/2 - 100, H/2);
-      ctx.font = '8px "Press Start 2P"';
-      ctx.fillStyle = '#cce8ff';
-      ctx.fillText('(or click)', W/2 - 40, H/2 + 28);
+      PS.dialogBox(ctx, W/2 - 120, H/2 - 24, 240, 50);
+      ctx.fillStyle = PS.PAL.uiText;
+      ctx.font = '10px "Press Start 2P"';
+      ctx.fillText('PRESS W TO START', W/2 - 102, H/2 + 2);
+      ctx.font = '7px "Press Start 2P"';
+      ctx.fillStyle = '#666';
+      ctx.fillText('(or click)', W/2 - 36, H/2 + 18);
     }
   }
 

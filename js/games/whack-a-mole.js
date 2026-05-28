@@ -99,16 +99,21 @@ const WhackAMoleGame = (() => {
   }
 
   function render() {
-    // Background - garden
-    ctx.fillStyle = '#1a3300';
-    ctx.fillRect(0, 0, W, H);
+    // Background - Pokemon GBA garden
+    PS.drawGrass(ctx, W, H, 0, 50);
+
+    // Sky strip at top
+    PS.drawSky(ctx, W, 0, 50);
+
+    // Tree row backdrop
+    PS.drawTreeRow(ctx, W, 52, 28, 0);
 
     // Dirt patches
-    ctx.fillStyle = '#2d1a00';
+    ctx.fillStyle = PS.PAL.pathDark;
     ctx.fillRect(0, 170, W, H - 170);
 
     // Grass border
-    ctx.fillStyle = '#2d5500';
+    ctx.fillStyle = PS.PAL.grassMid;
     ctx.fillRect(0, 165, W, 20);
 
     // Flower decorations
@@ -152,27 +157,26 @@ const WhackAMoleGame = (() => {
     const swing = gardener.swinging > 0 ? -0.8 : 0;
     drawGardener(gx, gy, swing);
 
-    // HUD
-    ctx.fillStyle = '#001a00';
-    ctx.fillRect(0, 0, W, 50);
-    ctx.fillStyle = '#9bbc0f';
-    ctx.font = '10px "Press Start 2P"';
-    ctx.fillText('WHACKS: ' + score, 10, 26);
-    ctx.fillStyle = '#f1c40f';
-    ctx.fillText('🪙 ' + Math.floor(score/30), W/2 - 30, 26);
+    // HUD (Pokemon dialog style)
+    PS.dialogBox(ctx, 4, 4, 140, 30);
+    ctx.fillStyle = PS.PAL.uiText;
+    ctx.font = '8px "Press Start 2P"';
+    ctx.fillText('WHACKS: ' + score, 10, 24);
+
+    PS.dialogBox(ctx, W/2 - 40, 4, 80, 30);
+    ctx.fillStyle = '#b07800';
+    ctx.font = '8px "Press Start 2P"';
+    ctx.fillText('🪙 ' + Math.floor(score/30), W/2 - 30, 24);
+
     const t = Math.ceil(timeLeft);
-    ctx.fillStyle = t <= 10 ? '#ff4444' : '#9bbc0f';
-    ctx.fillText('TIME: ' + t, W - 120, 26);
+    PS.dialogBox(ctx, W - 110, 4, 106, 30);
+    ctx.fillStyle = t <= 10 ? PS.PAL.hpRed : PS.PAL.uiText;
+    ctx.font = '8px "Press Start 2P"';
+    ctx.fillText('TIME: ' + t, W - 106, 24);
 
     // Token progress bar
     const prog = (score % 30) / 30;
-    ctx.fillStyle = '#1a3300';
-    ctx.fillRect(W/2 - 60, 35, 120, 8);
-    ctx.fillStyle = '#f1c40f';
-    ctx.fillRect(W/2 - 60, 35, 120 * prog, 8);
-    ctx.strokeStyle = '#5a5a00';
-    ctx.lineWidth = 1;
-    ctx.strokeRect(W/2 - 60, 35, 120, 8);
+    PS.hpBar(ctx, W/2 - 60, 38, 120, 8, prog);
   }
 
   function drawGardener(x, y, swingAngle) {

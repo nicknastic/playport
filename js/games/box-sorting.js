@@ -113,11 +113,13 @@ const BoxSortingGame = (() => {
   }
 
   function render() {
-    // Background
-    ctx.fillStyle = '#1a1000';
-    ctx.fillRect(0, 0, W, H);
-    // Floor
-    ctx.fillStyle = '#3a2800';
+    // ── Pokemon Mart / warehouse interior ──
+    ctx.fillStyle = PS.PAL.indoorWall;
+    ctx.fillRect(0, 0, W, BELT_Y - 10);
+    ctx.fillStyle = '#8090b8';
+    ctx.fillRect(0, BELT_Y - 18, W, 8);
+    PS.drawIndoorFloor(ctx, W, H, BELT_Y - 10);
+    ctx.fillStyle = PS.PAL.pathDark;
     ctx.fillRect(0, TRUCK_Y + TRUCK_H, W, H);
 
     // Animated belt
@@ -179,18 +181,18 @@ const BoxSortingGame = (() => {
       }
     });
 
-    // HUD
-    ctx.fillStyle = '#9bbc0f';
-    ctx.font = '10px "Press Start 2P"';
-    ctx.fillText('SORTED: ' + score, 10, 26);
-    ctx.fillStyle = '#ff6060';
-    ctx.fillText('MISS: ' + miss + '/5', W - 110, 26);
-    ctx.fillStyle = '#f1c40f';
-    ctx.fillText('🪙 ' + Math.floor(score/5), W/2 - 30, 26);
-    // Speed indicator
-    ctx.fillStyle = '#555';
+    // ── Pokemon dialog HUD ──
+    PS.dialogBox(ctx, 4, 4, 130, 38);
+    ctx.fillStyle = PS.PAL.uiText;
     ctx.font = '7px "Press Start 2P"';
-    ctx.fillText('SPEED: ' + Math.floor(speed), 10, 44);
+    ctx.fillText('SORTED: ' + score, 10, 18);
+    ctx.fillStyle = '#c82020';
+    ctx.fillText('MISS: ' + miss + '/5', 10, 34);
+    PS.dialogBox(ctx, W/2 - 36, 4, 72, 26);
+    ctx.fillStyle = '#b07800';
+    ctx.font = '8px "Press Start 2P"';
+    ctx.fillText('🪙 ' + Math.floor(score/5), W/2 - 26, 22);
+    PS.hpBar(ctx, W - 110, 12, 100, 10, miss > 0 ? 1 - miss/5 : 1);
 
     // Flash message
     if (flashMsg && flashMsg.t > 0) {
