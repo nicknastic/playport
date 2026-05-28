@@ -46,24 +46,33 @@ function renderCartridgeRack() {
   grid.innerHTML = '';
   GAMES.forEach(g => {
     const locked = !State.isUnlocked(g.id);
-    const el = document.createElement('div');
-    el.className = 'cart-item';
 
+    // Full cartridge = body (artwork) + connector tab
+    const wrapper = document.createElement('div');
+    wrapper.className = 'cart-wrapper';
+
+    const body = document.createElement('div');
+    body.className = 'cart-item';
     if (g.img) {
-      el.style.backgroundImage = `url('${g.img}')`;
-      el.style.backgroundSize = 'cover';
-      el.style.backgroundPosition = 'center top';
+      body.style.backgroundImage    = `url('${g.img}')`;
+      body.style.backgroundSize     = 'cover';
+      body.style.backgroundPosition = 'center top';
     } else {
-      el.style.background = `linear-gradient(160deg, ${g.color}, ${g.bg})`;
+      body.style.background = `linear-gradient(160deg, ${g.color}, ${g.bg})`;
     }
-
-    el.innerHTML = `
+    body.innerHTML = `
       ${locked ? `<div class="cart-locked-overlay">🔒<br>${g.cost}🪙</div>` : ''}
       <div class="cart-name">${g.name}</div>
     `;
 
-    el.addEventListener('mousedown', (e) => startDrag(e, g, el));
-    grid.appendChild(el);
+    const connector = document.createElement('div');
+    connector.className = 'cart-connector';
+
+    wrapper.appendChild(body);
+    wrapper.appendChild(connector);
+
+    wrapper.addEventListener('mousedown', (e) => startDrag(e, g, wrapper));
+    grid.appendChild(wrapper);
   });
 }
 
@@ -74,21 +83,12 @@ function startDrag(e, g, sourceEl) {
   const offsetX = e.clientX - rect.left;
   const offsetY = e.clientY - rect.top;
 
-  // Build the floating ghost cartridge
-  dragGhost = document.createElement('div');
+  // Clone the whole wrapper (body + connector) as the flying ghost
+  dragGhost = sourceEl.cloneNode(true);
   dragGhost.className = 'cart-ghost';
-  dragGhost.style.width  = rect.width  + 'px';
-  dragGhost.style.height = rect.height + 'px';
   dragGhost.style.left   = (e.clientX - offsetX) + 'px';
   dragGhost.style.top    = (e.clientY - offsetY) + 'px';
-
-  if (g.img) {
-    dragGhost.style.backgroundImage    = `url('${g.img}')`;
-    dragGhost.style.backgroundSize     = 'cover';
-    dragGhost.style.backgroundPosition = 'center top';
-  } else {
-    dragGhost.style.background = `linear-gradient(160deg, ${g.color}, ${g.bg})`;
-  }
+  dragGhost.style.width  = rect.width + 'px';
   document.body.appendChild(dragGhost);
 
   const slot = document.getElementById('cartridge-slot');
