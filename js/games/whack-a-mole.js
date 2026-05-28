@@ -5,7 +5,7 @@ const WhackAMoleGame = (() => {
   const HOLES = 5;
   const HOLE_Y = [200, 280, 340, 260, 320];
   const HOLE_X = [60, 140, 240, 340, 420];
-  const MOLE_TIME = 1.8;
+  const MOLE_TIME = 3.0;
   const GAME_TIME = 45;
 
   function start(c, callback) {
@@ -74,7 +74,7 @@ const WhackAMoleGame = (() => {
       const empties = holes.filter(h => !h.mole);
       if (empties.length > 0) {
         const h = empties[Math.floor(Math.random() * empties.length)];
-        const t = Math.max(0.8, MOLE_TIME - score * 0.02);
+        const t = Math.max(1.4, MOLE_TIME - score * 0.02);
         h.mole = { timer: t, maxTimer: t, popped: false };
       }
       nextMole = 0.5 + Math.random() * 0.8;
