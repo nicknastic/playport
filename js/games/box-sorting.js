@@ -186,7 +186,7 @@ const BoxSortingGame = (() => {
     ctx.fillStyle = '#ff6060';
     ctx.fillText('MISS: ' + miss + '/5', W - 110, 26);
     ctx.fillStyle = '#f1c40f';
-    ctx.fillText('🪙 ' + Math.floor(score/10), W/2 - 30, 26);
+    ctx.fillText('🪙 ' + Math.floor(score/5), W/2 - 30, 26);
     // Speed indicator
     ctx.fillStyle = '#555';
     ctx.font = '7px "Press Start 2P"';
@@ -230,7 +230,7 @@ const BoxSortingGame = (() => {
     canvas.removeEventListener('mousedown', onDown);
     canvas.removeEventListener('mousemove', onMove);
     canvas.removeEventListener('mouseup', onUp);
-    const earned = Math.floor(score / 10);
+    const earned = Math.floor(score / 5);
     ctx.fillStyle = 'rgba(0,0,0,0.78)';
     ctx.fillRect(0, 0, W, H);
     ctx.fillStyle = '#9bbc0f';
