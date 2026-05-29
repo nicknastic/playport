@@ -138,9 +138,9 @@ const BoxSortingGame = (() => {
     ctx.font = '8px "Press Start 2P"';
     ctx.fillText('CONVEYOR BELT  ◀◀◀', 10, BELT_Y - 8);
 
-    // Trucks
-    drawTruck(RED_X,  TRUCK_Y, '#c0392b', 'RED');
-    drawTruck(BLUE_X, TRUCK_Y, '#2980b9', 'BLUE');
+    // Trucks — red faces right (cab on right), blue faces left (mirrored)
+    drawTruck(RED_X,  TRUCK_Y, '#c0392b', 'RED',  false);
+    drawTruck(BLUE_X, TRUCK_Y, '#2980b9', 'BLUE', true);
 
     // Grey bin in the middle (discard zone for grey boxes)
     const binX = W/2 - 35, binY = TRUCK_Y + 10;
@@ -207,9 +207,18 @@ const BoxSortingGame = (() => {
     ctx.fillText('? grey box = ignore', 10, H - 8);
   }
 
-  function drawTruck(x, y, color, label) {
+  function drawTruck(x, y, color, label, flipped = false) {
     const TW = TRUCK_W, TH = TRUCK_H;
     const trailerW = 62, cabW = 38;
+
+    // Mirror around the truck's horizontal centre when flipped
+    if (flipped) {
+      ctx.save();
+      ctx.translate(x + TW, 0);
+      ctx.scale(-1, 1);
+      x = 0;
+    }
+
     const cabX = x + trailerW;
     const wheelY = y + TH - 2;
 
@@ -329,6 +338,8 @@ const BoxSortingGame = (() => {
       const ang = (a / 5) * Math.PI * 2;
       ctx.beginPath(); ctx.arc(cabWx + Math.cos(ang) * 4, wheelY + Math.sin(ang) * 4, 1, 0, Math.PI * 2); ctx.fill();
     }
+
+    if (flipped) ctx.restore();
   }
 
   function endGame() {
