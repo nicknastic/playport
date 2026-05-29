@@ -249,6 +249,8 @@ html, body {
   white-space: nowrap;
 }
 .btn-small:hover { background: var(--gb-mid); }
+.btn-restart { border-color: #f1c40f; color: #f1c40f; }
+.btn-restart:hover { background: #3a2e00; }
 
 /* ── MENU ── */
 .menu-header {

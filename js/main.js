@@ -1,4 +1,5 @@
 let activeGame = null;
+let currentGame = null;
 let dragGhost = null;
 
 function showScreen(id) {
@@ -165,6 +166,7 @@ const GAME_MODULES = {
 
 function launchGame(g) {
   if (activeGame) { activeGame.stop(); activeGame = null; }
+  currentGame = g;
   hideRack();
   showScreen('game');
   document.getElementById('game-title-display').textContent = g.icon + ' ' + g.name;
@@ -186,10 +188,15 @@ function launchGame(g) {
 
 document.getElementById('btn-back-game').onclick = () => {
   if (activeGame) { activeGame.stop(); activeGame = null; }
+  currentGame = null;
   showScreen('menu');
   showRack();
   renderCartridgeRack();
   updateTokenDisplay();
+};
+
+document.getElementById('btn-restart-game').onclick = () => {
+  if (currentGame) launchGame(currentGame);
 };
 
 // ── SETTINGS ──
