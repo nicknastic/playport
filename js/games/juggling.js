@@ -329,80 +329,170 @@ const JugglingGame = (() => {
     const jx = jester.x, jy = jester.y + jester.bodyBob;
     const lLeg = Math.sin(jester.legPhase) * 6 * Math.abs(jester.moving);
     const rLeg = -lLeg;
+    const JR = '#cc1111', JB = '#2255cc', JY = '#ffd700'; // jester palette
 
-    // Legs (animated)
-    ctx.fillStyle = '#ffff00';
-    ctx.fillRect(jx - 12, jy + 6 + lLeg, 10, 22 - Math.abs(lLeg));
-    ctx.fillStyle = '#cc44cc';
-    ctx.fillRect(jx + 2,  jy + 6 + rLeg, 10, 22 - Math.abs(rLeg));
-    // Shoes
-    ctx.fillStyle = '#111';
-    ctx.fillRect(jx - 16, jy + 26 + lLeg, 16, 7);
-    ctx.fillRect(jx + 2,  jy + 26 + rLeg, 16, 7);
-
-    // Body
-    ctx.fillStyle = '#cc44cc';
-    ctx.fillRect(jx - 14, jy - 30, 28, 36);
-    // Collar zigzag
-    ctx.fillStyle = '#ffff00';
-    for (let i = 0; i < 4; i++) {
+    // ── Curled pointy shoes ──
+    [[-1, lLeg], [1, rLeg]].forEach(([side, leg]) => {
+      const sx = jx + side * 8;
+      ctx.fillStyle = JR;
       ctx.beginPath();
-      ctx.moveTo(jx - 14 + i*7, jy - 30);
-      ctx.lineTo(jx - 10 + i*7, jy - 24);
-      ctx.lineTo(jx - 7  + i*7, jy - 30);
-      ctx.closePath(); ctx.fill();
-    }
+      ctx.ellipse(sx + side * 4, jy + 34 + leg, 10, 6, side * 0.3, 0, Math.PI * 2);
+      ctx.fill();
+      // Curled toe
+      ctx.beginPath();
+      ctx.ellipse(sx + side * 14, jy + 30 + leg, 5, 4, side * -0.6, 0, Math.PI * 2);
+      ctx.fill();
+      // Bell on toe
+      ctx.fillStyle = JY;
+      ctx.beginPath(); ctx.arc(sx + side * 18, jy + 28 + leg, 3.5, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#aa8800';
+      ctx.beginPath(); ctx.arc(sx + side * 18, jy + 29 + leg, 1.5, 0, Math.PI * 2); ctx.fill();
+    });
 
-    // Arms (raised toward nearby balls)
+    // ── Striped stockings (yellow + blue horizontal stripes) ──
+    [[-10, lLeg], [2, rLeg]].forEach(([ox, leg]) => {
+      for (let s = 0; s < 5; s++) {
+        ctx.fillStyle = s % 2 === 0 ? JY : JB;
+        ctx.fillRect(jx + ox, jy + 8 + leg + s * 4.5, 10, 4.5);
+      }
+    });
+
+    // ── Puffy pantaloons (big balloon breeches) ──
+    // Left puff
+    ctx.fillStyle = JB;
+    ctx.beginPath(); ctx.ellipse(jx - 10, jy + 2, 12, 16, -0.15, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = JY;
+    ctx.beginPath(); ctx.ellipse(jx - 10, jy + 2, 5, 14, -0.15, 0, Math.PI * 2); ctx.fill();
+    // Right puff
+    ctx.fillStyle = JB;
+    ctx.beginPath(); ctx.ellipse(jx + 10, jy + 2, 12, 16, 0.15, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = JY;
+    ctx.beginPath(); ctx.ellipse(jx + 10, jy + 2, 5, 14, 0.15, 0, Math.PI * 2); ctx.fill();
+    // Little bells on pantaloon hem
+    [jx - 18, jx - 6, jx + 6, jx + 18].forEach(bx => {
+      ctx.fillStyle = JY;
+      ctx.beginPath(); ctx.arc(bx, jy + 16, 3, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#aa8800';
+      ctx.beginPath(); ctx.arc(bx, jy + 17, 1.2, 0, Math.PI * 2); ctx.fill();
+    });
+
+    // ── Torso / tunic (red with yellow stripe) ──
+    ctx.fillStyle = JR;
+    ctx.fillRect(jx - 13, jy - 32, 26, 34);
+    // Yellow centre stripe
+    ctx.fillStyle = JY;
+    ctx.fillRect(jx - 4, jy - 32, 8, 34);
+    // Gold buttons down centre
+    ctx.fillStyle = JY;
+    [jy - 26, jy - 18, jy - 10].forEach(by => {
+      ctx.beginPath(); ctx.arc(jx, by, 2.5, 0, Math.PI * 2); ctx.fill();
+    });
+    // Belt
+    ctx.fillStyle = '#111';
+    ctx.fillRect(jx - 13, jy, 26, 5);
+    ctx.fillStyle = JY;
+    ctx.fillRect(jx - 4, jy + 1, 8, 3);
+
+    // ── Puffy sleeves ──
     const armLift = -14;
-    const armLY = jy - 28 + armLift * jester.armL;
-    const armRY = jy - 28 + armLift * jester.armR;
-    ctx.fillStyle = '#cc44cc';
-    ctx.fillRect(jx - 30, armLY, 18, 8);
-    ctx.fillRect(jx + 12, armRY, 18, 8);
-    // Hands (glow if arm is raised)
-    ctx.fillStyle = jester.armL > 0.4 ? '#ffe066' : '#f5c87a';
-    ctx.beginPath(); ctx.arc(jx - 30, armLY + 4, 8, 0, Math.PI*2); ctx.fill();
-    ctx.fillStyle = jester.armR > 0.4 ? '#ffe066' : '#f5c87a';
-    ctx.beginPath(); ctx.arc(jx + 30, armRY + 4, 8, 0, Math.PI*2); ctx.fill();
+    const armLY = jy - 26 + armLift * jester.armL;
+    const armRY = jy - 26 + armLift * jester.armR;
+    // Left sleeve (puffy upper arm)
+    ctx.fillStyle = JR;
+    ctx.beginPath(); ctx.ellipse(jx - 22, armLY + 4, 11, 8, 0.3, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = JY;
+    ctx.beginPath(); ctx.ellipse(jx - 22, armLY + 4, 5, 6, 0.3, 0, Math.PI * 2); ctx.fill();
+    // Forearm
+    ctx.fillStyle = JB;
+    ctx.fillRect(jx - 34, armLY + 1, 14, 6);
+    // Right sleeve
+    ctx.fillStyle = JR;
+    ctx.beginPath(); ctx.ellipse(jx + 22, armRY + 4, 11, 8, -0.3, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = JY;
+    ctx.beginPath(); ctx.ellipse(jx + 22, armRY + 4, 5, 6, -0.3, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = JB;
+    ctx.fillRect(jx + 20, armRY + 1, 14, 6);
 
-    // Head
-    ctx.fillStyle = '#f5c87a';
-    ctx.beginPath(); ctx.arc(jx, jy - 44, 16, 0, Math.PI*2); ctx.fill();
+    // ── Yellow gloved hands ──
+    ctx.fillStyle = jester.armL > 0.4 ? '#ffe566' : JY;
+    ctx.beginPath(); ctx.arc(jx - 34, armLY + 4, 8, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#cc9900';
+    ctx.beginPath(); ctx.arc(jx - 34, armLY + 4, 4, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = jester.armR > 0.4 ? '#ffe566' : JY;
+    ctx.beginPath(); ctx.arc(jx + 34, armRY + 4, 8, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#cc9900';
+    ctx.beginPath(); ctx.arc(jx + 34, armRY + 4, 4, 0, Math.PI * 2); ctx.fill();
 
-    // Hat
-    ctx.fillStyle = '#cc44cc';
-    ctx.beginPath(); ctx.moveTo(jx-16,jy-58); ctx.lineTo(jx-6,jy-82); ctx.lineTo(jx,jy-58); ctx.fill();
-    ctx.fillStyle = '#ffff00';
-    ctx.beginPath(); ctx.moveTo(jx,jy-58); ctx.lineTo(jx+10,jy-82); ctx.lineTo(jx+16,jy-58); ctx.fill();
-    // Hat bells (jiggle with movement)
-    const bellJiggle = Math.sin(ts * 0.015) * 2 * Math.abs(jester.moving);
-    ctx.fillStyle = '#ff8800';
-    ctx.beginPath(); ctx.arc(jx - 6, jy - 82 + bellJiggle, 4.5, 0, Math.PI*2); ctx.fill();
-    ctx.beginPath(); ctx.arc(jx + 10, jy - 82 - bellJiggle, 4.5, 0, Math.PI*2); ctx.fill();
+    // ── White ruffled collar ──
+    ctx.fillStyle = '#f8f8f8';
+    for (let i = 0; i < 6; i++) {
+      const cx2 = jx - 15 + i * 6;
+      ctx.beginPath(); ctx.ellipse(cx2, jy - 33, 5, 7, (i - 2.5) * 0.2, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.fillStyle = '#e0e0e0';
+    ctx.beginPath(); ctx.ellipse(jx, jy - 34, 13, 5, 0, 0, Math.PI * 2); ctx.fill();
 
-    // Eyes (blink every ~3s)
+    // ── Head (white stage makeup) ──
+    ctx.fillStyle = '#f2f2ee';
+    ctx.beginPath(); ctx.arc(jx, jy - 48, 15, 0, Math.PI * 2); ctx.fill();
+    // Red-brown hair on sides
+    ctx.fillStyle = '#8b2020';
+    ctx.beginPath(); ctx.arc(jx - 14, jy - 46, 7, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(jx + 14, jy - 46, 7, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(jx - 12, jy - 40, 5, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(jx + 12, jy - 40, 5, 0, Math.PI * 2); ctx.fill();
+
+    // ── 3-pointed jester hat ──
+    const bellJiggle = Math.sin(ts * 0.015) * 2.5 * Math.abs(jester.moving);
+    const hatBase = jy - 58;
+    // Hat base band
+    ctx.fillStyle = JR;
+    ctx.fillRect(jx - 18, hatBase, 36, 8);
+    // Left point — red
+    ctx.fillStyle = JR;
+    ctx.beginPath(); ctx.moveTo(jx - 18, hatBase); ctx.lineTo(jx - 8, hatBase - 26); ctx.lineTo(jx - 2, hatBase); ctx.closePath(); ctx.fill();
+    // Centre point — blue
+    ctx.fillStyle = JB;
+    ctx.beginPath(); ctx.moveTo(jx - 6, hatBase); ctx.lineTo(jx, hatBase - 30); ctx.lineTo(jx + 6, hatBase); ctx.closePath(); ctx.fill();
+    // Right point — yellow
+    ctx.fillStyle = JY;
+    ctx.beginPath(); ctx.moveTo(jx + 2, hatBase); ctx.lineTo(jx + 10, hatBase - 26); ctx.lineTo(jx + 18, hatBase); ctx.closePath(); ctx.fill();
+    // Hat brim stripe
+    ctx.fillStyle = JB;
+    ctx.fillRect(jx - 18, hatBase + 3, 36, 5);
+    // Bells at hat tips
+    [[jx - 8, hatBase - 26 + bellJiggle], [jx, hatBase - 30 - bellJiggle], [jx + 10, hatBase - 26 + bellJiggle]].forEach(([bx, by]) => {
+      ctx.fillStyle = JY;
+      ctx.beginPath(); ctx.arc(bx, by, 4, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#aa8800';
+      ctx.beginPath(); ctx.arc(bx, by + 1, 1.8, 0, Math.PI * 2); ctx.fill();
+    });
+
+    // ── Face details ──
     const blinking = Math.sin(ts * 0.003) > 0.97;
     ctx.fillStyle = '#222';
     if (blinking) {
-      ctx.fillRect(jx - 8, jy - 48, 5, 2);
-      ctx.fillRect(jx + 3, jy - 48, 5, 2);
+      ctx.fillRect(jx - 8, jy - 51, 5, 2);
+      ctx.fillRect(jx + 3, jy - 51, 5, 2);
     } else {
-      ctx.beginPath(); ctx.arc(jx - 6, jy - 46, 2.5, 0, Math.PI*2); ctx.fill();
-      ctx.beginPath(); ctx.arc(jx + 6, jy - 46, 2.5, 0, Math.PI*2); ctx.fill();
-      // Pupils track nearest ball
+      ctx.beginPath(); ctx.arc(jx - 6, jy - 50, 2.5, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(jx + 6, jy - 50, 2.5, 0, Math.PI * 2); ctx.fill();
       if (balls.length > 0) {
-        const nb = balls.reduce((a,b) => Math.abs(b.x-jx) < Math.abs(a.x-jx) ? b : a);
+        const nb = balls.reduce((a, b) => Math.abs(b.x - jx) < Math.abs(a.x - jx) ? b : a);
         const px = Math.sign(nb.x - jx) * 1.2;
         const py = nb.y < jy ? -1 : 0.5;
         ctx.fillStyle = '#fff';
-        ctx.beginPath(); ctx.arc(jx-6+px, jy-46+py, 1, 0, Math.PI*2); ctx.fill();
-        ctx.beginPath(); ctx.arc(jx+6+px, jy-46+py, 1, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc(jx - 6 + px, jy - 50 + py, 1, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(jx + 6 + px, jy - 50 + py, 1, 0, Math.PI * 2); ctx.fill();
       }
     }
+    // Rosy cheeks
+    ctx.fillStyle = 'rgba(220,80,80,0.22)';
+    ctx.beginPath(); ctx.arc(jx - 9, jy - 46, 5, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(jx + 9, jy - 46, 5, 0, Math.PI * 2); ctx.fill();
     // Smile
-    ctx.strokeStyle = '#222'; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.arc(jx, jy - 42, 7, 0.2, Math.PI - 0.2); ctx.stroke();
+    ctx.strokeStyle = '#333'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(jx, jy - 44, 6, 0.2, Math.PI - 0.2); ctx.stroke();
 
     // ── S prompt: flash on any catchable ball ──
     const anyNear = balls.some(b => {
