@@ -296,27 +296,63 @@ const FlappyGooseGame = (() => {
 
   function drawTree(x, y, w, h, flipped) {
     if (h <= 0) return;
-    const tw = 16, tx = x + (w - tw) / 2;
-    ctx.fillStyle = '#5a3200';
-    ctx.fillRect(tx, y, tw, h);
-    const layers = 3;
-    const lh = Math.min(h * 0.8, 80);
-    const startY = flipped ? y + h : y;
-    const dir = flipped ? -1 : 1;
-    for (let i = 0; i < layers; i++) {
-      const ly = startY + dir * (i * lh * 0.35);
-      const lw = w * (0.6 + i * 0.2);
-      ctx.fillStyle = i === 0 ? '#267300' : (i === 1 ? '#1a5c00' : '#134d00');
+    const cx = x + w / 2;
+
+    // ── Trunk ──
+    const trunkH = Math.min(h * 0.18, 28);
+    const trunkW = 9;
+    const trunkY = flipped ? y : y + h - trunkH;
+    ctx.fillStyle = '#4a2808';
+    ctx.fillRect(cx - trunkW / 2, trunkY, trunkW, trunkH);
+    // Trunk highlight
+    ctx.fillStyle = '#7a4820';
+    ctx.fillRect(cx - trunkW / 2 + 2, trunkY, 3, trunkH);
+
+    // ── Pine branch layers (narrow at tip, wide at base) ──
+    const treeH = h - trunkH;
+    const tipY  = flipped ? trunkY + trunkH : y;
+    const numLayers = Math.max(5, Math.ceil(treeH / 18));
+
+    for (let i = 0; i < numLayers; i++) {
+      const t = i / numLayers;                       // 0 = tip, 1 = base
+      const layerW = w * (0.12 + t * 0.88);          // narrow → wide
+      const ly     = flipped
+        ? tipY + treeH * t
+        : tipY + treeH * t;
+      const drop   = treeH / numLayers * 1.5;        // overlap layers
+
+      // Dark shadow underside of each tier
+      ctx.fillStyle = '#0c3006';
       ctx.beginPath();
-      if (flipped) {
-        ctx.moveTo(x+w/2, ly - lh*0.5); ctx.lineTo(x+w/2-lw/2, ly); ctx.lineTo(x+w/2+lw/2, ly);
-      } else {
-        ctx.moveTo(x+w/2, ly + lh*0.5); ctx.lineTo(x+w/2-lw/2, ly); ctx.lineTo(x+w/2+lw/2, ly);
-      }
+      ctx.moveTo(cx, ly);
+      ctx.lineTo(cx - layerW / 2, ly + drop);
+      ctx.lineTo(cx + layerW / 2, ly + drop);
+      ctx.closePath(); ctx.fill();
+
+      // Main branch colour (alternate dark/mid green for texture)
+      ctx.fillStyle = i % 2 === 0 ? '#1d6b0e' : '#226010';
+      ctx.beginPath();
+      ctx.moveTo(cx, ly - 1);
+      ctx.lineTo(cx - layerW * 0.46, ly + drop * 0.78);
+      ctx.lineTo(cx + layerW * 0.46, ly + drop * 0.78);
+      ctx.closePath(); ctx.fill();
+
+      // Lighter centre highlight — sun catching top of branches
+      ctx.fillStyle = '#2e8c18';
+      ctx.beginPath();
+      ctx.moveTo(cx, ly - 2);
+      ctx.lineTo(cx - layerW * 0.22, ly + drop * 0.48);
+      ctx.lineTo(cx + layerW * 0.22, ly + drop * 0.48);
+      ctx.closePath(); ctx.fill();
+
+      // Tiny bright tip highlight
+      ctx.fillStyle = '#3aaa22';
+      ctx.beginPath();
+      ctx.moveTo(cx, ly - 3);
+      ctx.lineTo(cx - layerW * 0.10, ly + drop * 0.22);
+      ctx.lineTo(cx + layerW * 0.10, ly + drop * 0.22);
       ctx.closePath(); ctx.fill();
     }
-    ctx.fillStyle = '#336600';
-    ctx.fillRect(x, flipped ? y : y + h - 8, w, 8);
   }
 
   function drawGoose(x, y, wing) {
