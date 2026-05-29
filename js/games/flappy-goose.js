@@ -107,6 +107,10 @@ const FlappyGooseGame = (() => {
     // ── Distant tree line (tiny, very slow) ──
     PS.drawTreeRow(ctx, W, GROUND_Y - 58, 12, bgOffset * 0.06);
 
+    // ── Background trees behind the hills ──
+    PS.drawTreeRow(ctx, W, GROUND_Y - 70, 14, bgOffset * 0.09);
+    PS.drawTreeRow(ctx, W, GROUND_Y - 90, 16, bgOffset * 0.11);
+
     // ── Far background hills (muted, very slow) ──
     ctx.fillStyle = '#7aaa78';
     drawHillRange(bgOffset * 0.1, GROUND_Y - 60, 260, 2.0, 0.3);
