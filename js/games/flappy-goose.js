@@ -104,26 +104,24 @@ const FlappyGooseGame = (() => {
     ctx.fillStyle = sunGrad;
     ctx.beginPath(); ctx.arc(sunX, sunY, 26, 0, Math.PI * 2); ctx.fill();
 
-    // ── Distant tree line replacing grey mountains (tiny, very slow) ──
+    // ── Distant tree line (tiny, very slow) ──
     PS.drawTreeRow(ctx, W, GROUND_Y - 58, 12, bgOffset * 0.06);
 
     // ── Far background hills (muted, very slow) ──
     ctx.fillStyle = '#7aaa78';
     drawHillRange(bgOffset * 0.1, GROUND_Y - 60, 260, 2.0, 0.3);
 
-    // ── Background tree row (sits on far hills) ──
-    PS.drawTreeRow(ctx, W, GROUND_Y - 78, 18, bgOffset * 0.12);
-
     // ── Mid hills (medium parallax) ──
     ctx.fillStyle = PS.PAL.grassMid;
     drawHillRange(bgOffset * 0.2, GROUND_Y - 45, 220, 2.5, 0.55);
 
-    // ── Mid tree row (sits on mid hills) ──
-    PS.drawTreeRow(ctx, W, GROUND_Y - 88, 26, bgOffset * 0.22);
-
     // ── Near rolling hills ──
     ctx.fillStyle = PS.PAL.treeBase;
     drawHillRange(bgOffset * 0.45, GROUND_Y - 22, 160, 2.5, 0.65);
+
+    // ── Trees in front of hills (grounded at floor level) ──
+    PS.drawTreeRow(ctx, W, GROUND_Y - 36, 18, bgOffset * 0.28);
+    PS.drawTreeRow(ctx, W, GROUND_Y - 52, 26, bgOffset * 0.38);
 
     // ── Scrolling clouds ──
     clouds.forEach(c => drawCloud(c.x, c.y, c.s));
