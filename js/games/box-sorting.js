@@ -3,9 +3,9 @@ const BoxSortingGame = (() => {
   let boxes, score, miss, speed, spawnTimer, spawnInterval, gameOver, lastTime, drag;
   const W = 480, H = 440;
   const BELT_Y = 100, BELT_H = 60;
-  const TRUCK_W = 100, TRUCK_H = 80;
-  const RED_X = 30, BLUE_X = W - 30 - TRUCK_W;
-  const TRUCK_Y = H - TRUCK_H - 20;
+  const TRUCK_W = 58, TRUCK_H = 135;           // vertical: narrow width, tall height
+  const RED_X = 28, BLUE_X = W - 28 - TRUCK_W; // 28 and 394
+  const TRUCK_Y = H - TRUCK_H - 8;             // sits near bottom
   // Animated belt offset
   let beltOffset = 0;
 
@@ -138,9 +138,9 @@ const BoxSortingGame = (() => {
     ctx.font = '8px "Press Start 2P"';
     ctx.fillText('CONVEYOR BELT  ◀◀◀', 10, BELT_Y - 8);
 
-    // Trucks — red faces right (cab on right), blue faces left (mirrored)
-    drawTruck(RED_X,  TRUCK_Y, '#c0392b', 'RED',  false);
-    drawTruck(BLUE_X, TRUCK_Y, '#2980b9', 'BLUE', true);
+    // Trucks — both vertical, cab at top facing up toward belt
+    drawTruck(RED_X,  TRUCK_Y, '#c0392b', 'RED');
+    drawTruck(BLUE_X, TRUCK_Y, '#2980b9', 'BLUE');
 
     // Grey bin in the middle (discard zone for grey boxes)
     const binX = W/2 - 35, binY = TRUCK_Y + 10;
@@ -207,135 +207,201 @@ const BoxSortingGame = (() => {
     ctx.fillText('? grey box = ignore', 10, H - 8);
   }
 
-  function drawTruck(x, y, color, label, flipped = false) {
-    const TW = TRUCK_W, TH = TRUCK_H;
-    const trailerW = 62, cabW = 38;
+  function drawTruck(x, y, color, label) {
+    // ── VERTICAL TOP-DOWN VIEW — cab at top, trailer going down ──
+    const TW = TRUCK_W;   // 58px wide
+    const TH = TRUCK_H;   // 135px tall
+    const cabH  = 44;     // cab section
+    const gap   = 6;      // coupling gap
+    const trailY = y + cabH + gap;
+    const trailH = TH - cabH - gap;
+    const cx = x + TW / 2; // horizontal centre
 
-    // Mirror for right-side truck
-    if (flipped) {
-      ctx.save();
-      ctx.translate(x + TW, 0);
-      ctx.scale(-1, 1);
-      x = 0;
+    const hi  = color === '#c0392b' ? '#d94f4f' : '#3daee8';
+    const dim = color === '#c0392b' ? '#7a1010' : '#104a70';
+
+    // ── Drop shadow ──
+    ctx.fillStyle = 'rgba(0,0,0,0.18)';
+    ctx.fillRect(x + 6, y + TH + 2, TW - 4, 6);
+
+    // ══════════════ TRAILER ══════════════
+    // Outer metal frame
+    ctx.fillStyle = '#2a2a2a';
+    ctx.fillRect(x, trailY, TW, trailH);
+
+    // Trailer skin — corrugated vertical ribs (like right photo)
+    const ribCount = 9;
+    const ribW = (TW - 6) / ribCount;
+    for (let i = 0; i < ribCount; i++) {
+      const rx = x + 3 + i * ribW;
+      const bright = i % 2 === 0;
+      ctx.fillStyle = bright ? hi : color;
+      ctx.fillRect(rx, trailY + 2, ribW - 0.5, trailH - 4);
+    }
+    // Subtle horizontal seam lines across ribs
+    ctx.fillStyle = 'rgba(0,0,0,0.18)';
+    for (let s = 1; s <= 3; s++) {
+      ctx.fillRect(x + 3, trailY + s * (trailH / 4), TW - 6, 1);
     }
 
-    // ── TOP-DOWN VIEW ──
-    // Layout: [trailer ........][cab]
-    const cabX = x + trailerW;
-    const hi  = color === '#c0392b' ? '#e05858' : '#3daee8';
-    const mid = color === '#c0392b' ? '#a02222' : '#1a6090';
-
-    // Drop shadow
-    ctx.fillStyle = 'rgba(0,0,0,0.22)';
-    ctx.fillRect(x + 4, y + TH, TW - 2, 5);
-
-    // ── Trailer chassis / outer frame ──
-    ctx.fillStyle = '#252525';
-    ctx.fillRect(x, y + 3, trailerW, TH - 6);
-
-    // Trailer deck — planks (top-down: horizontal stripes, light wood style tinted by color)
-    const deckX = x + 3, deckY = y + 6, deckW = trailerW - 6, deckH = TH - 12;
-    const plankCount = 7;
-    const plankH = deckH / plankCount;
-    for (let i = 0; i < plankCount; i++) {
-      // Alternate slightly lighter/darker
-      ctx.fillStyle = i % 2 === 0 ? hi : color;
-      ctx.fillRect(deckX, deckY + i * plankH, deckW, plankH - 0.5);
-    }
-    // Subtle wood-grain lines
-    ctx.fillStyle = 'rgba(0,0,0,0.10)';
-    for (let i = 0; i < 3; i++) {
-      ctx.fillRect(deckX + 8 + i * 16, deckY + 2, 1, deckH - 4);
-    }
-
-    // Trailer side rails (top and bottom edges)
+    // Left and right side rails
     ctx.fillStyle = '#1a1a1a';
-    ctx.fillRect(x + 2, y + 3, trailerW - 4, 3);
-    ctx.fillRect(x + 2, y + TH - 6, trailerW - 4, 3);
+    ctx.fillRect(x,          trailY, 3, trailH);
+    ctx.fillRect(x + TW - 3, trailY, 3, trailH);
+    // Rail edge highlight
+    ctx.fillStyle = '#555';
+    ctx.fillRect(x + 2,      trailY, 1, trailH);
+    ctx.fillRect(x + TW - 3, trailY, 1, trailH);
 
-    // Tie-down clips along top and bottom rails
+    // Tie-down hardware along left and right rails
     ctx.fillStyle = '#111';
-    for (let i = 0; i < 6; i++) {
-      const cx2 = x + 4 + i * 10;
-      ctx.fillRect(cx2, y + 1, 4, 5);     // top clip
-      ctx.fillRect(cx2, y + TH - 6, 4, 5); // bottom clip
+    const clipCount = 7;
+    for (let i = 0; i < clipCount; i++) {
+      const cy2 = trailY + 4 + i * ((trailH - 8) / (clipCount - 1));
+      ctx.fillRect(x - 2,      cy2 - 2, 5, 4);  // left clip
+      ctx.fillRect(x + TW - 3, cy2 - 2, 5, 4);  // right clip
     }
 
-    // Trailer rear board (left end)
-    ctx.fillStyle = '#333';
-    ctx.fillRect(x, y + 3, 3, TH - 6);
+    // Rear bumper bar (bottom of trailer)
+    ctx.fillStyle = '#888';
+    ctx.fillRect(x + 2, y + TH - 4, TW - 4, 4);
+    ctx.fillStyle = '#bbb';
+    ctx.fillRect(x + 4, y + TH - 3, TW - 8, 2);
 
-    // Rear trailer wheels (top-down: two pairs visible on sides)
-    [[x + 14, y + 2], [x + 30, y + 2]].forEach(([wx, wy]) => {
-      ctx.fillStyle = '#0f0f0f'; ctx.fillRect(wx - 4, wy - 5, 8, 5);
-      ctx.fillStyle = '#606060'; ctx.fillRect(wx - 3, wy - 4, 6, 3);
+    // Rear axle wheels (left and right of trailer bottom)
+    [x - 6, x + TW - 4].forEach(wx => {
+      ctx.fillStyle = '#111'; ctx.fillRect(wx, y + TH - 22, 10, 16);
+      ctx.fillStyle = '#666'; ctx.fillRect(wx + 1, y + TH - 21, 8, 14);
+      ctx.fillStyle = '#333'; ctx.fillRect(wx + 3, y + TH - 19, 4, 10);
     });
-    [[x + 14, y + TH - 2], [x + 30, y + TH - 2]].forEach(([wx, wy]) => {
-      ctx.fillStyle = '#0f0f0f'; ctx.fillRect(wx - 4, wy, 8, 5);
-      ctx.fillStyle = '#606060'; ctx.fillRect(wx - 3, wy + 1, 6, 3);
+    // Second rear axle wheels slightly higher
+    [x - 6, x + TW - 4].forEach(wx => {
+      ctx.fillStyle = '#111'; ctx.fillRect(wx, y + TH - 42, 10, 16);
+      ctx.fillStyle = '#666'; ctx.fillRect(wx + 1, y + TH - 41, 8, 14);
+      ctx.fillStyle = '#333'; ctx.fillRect(wx + 3, y + TH - 39, 4, 10);
     });
 
     // Label on trailer
     ctx.save();
-    ctx.fillStyle = 'rgba(0,0,0,0.45)';
+    ctx.translate(x + TW / 2, trailY + trailH / 2);
+    ctx.rotate(Math.PI / 2);
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
     ctx.font = '7px "Press Start 2P"';
     const lw = ctx.measureText(label).width;
-    ctx.fillText(label, deckX + (deckW - lw) / 2 + 1, deckY + deckH / 2 + 4);
+    ctx.fillText(label, -lw / 2 + 1, 4);
     ctx.fillStyle = '#fff';
-    ctx.fillText(label, deckX + (deckW - lw) / 2, deckY + deckH / 2 + 3);
+    ctx.fillText(label, -lw / 2, 3);
     ctx.restore();
 
-    // ── Cab (top-down, boxy cab-over) ──
-    // Outer shell
-    ctx.fillStyle = '#1a1a1a';
-    ctx.fillRect(cabX, y + 2, cabW, TH - 4);
-    // Main white/silver roof panel
-    ctx.fillStyle = '#e0e0e0';
-    ctx.fillRect(cabX + 2, y + 5, cabW - 6, TH - 10);
-    // Roof highlight (sunlit top)
-    ctx.fillStyle = '#f2f2f2';
-    ctx.fillRect(cabX + 4, y + 7, cabW - 14, TH - 14);
-    // Center roof vent / AC unit
-    ctx.fillStyle = '#b0b0b0';
-    ctx.fillRect(cabX + 6, y + TH/2 - 5, cabW - 18, 10);
+    // ══════════════ COUPLING / 5TH WHEEL ══════════════
+    ctx.fillStyle = '#444';
+    ctx.fillRect(x + 8, y + cabH, TW - 16, gap);
+    ctx.fillStyle = '#666';
+    ctx.fillRect(x + 10, y + cabH + 1, TW - 20, gap - 2);
+    // King pin
     ctx.fillStyle = '#888';
-    ctx.fillRect(cabX + 7, y + TH/2 - 4, cabW - 20, 8);
+    ctx.beginPath(); ctx.arc(cx, y + cabH + gap / 2, 3, 0, Math.PI * 2); ctx.fill();
 
-    // Color accent stripes along sides
-    ctx.fillStyle = color;
-    ctx.fillRect(cabX + 2, y + 3, cabW - 6, 4);
-    ctx.fillRect(cabX + 2, y + TH - 7, cabW - 6, 4);
-    // Dark stripe just inside color stripe
-    ctx.fillStyle = mid;
-    ctx.fillRect(cabX + 2, y + 6, cabW - 6, 2);
-    ctx.fillRect(cabX + 2, y + TH - 8, cabW - 6, 2);
+    // ══════════════ CAB (nose at top) ══════════════
+    // Cab outer shell (slightly wider silhouette)
+    ctx.fillStyle = '#1e1e1e';
+    ctx.beginPath();
+    ctx.moveTo(x + 6,      y + cabH);      // rear left
+    ctx.lineTo(x,          y + cabH - 6);  // mid-left
+    ctx.lineTo(x + 2,      y + 8);         // front left shoulder
+    ctx.lineTo(x + TW / 2, y);             // nose tip
+    ctx.lineTo(x + TW - 2, y + 8);         // front right shoulder
+    ctx.lineTo(x + TW,     y + cabH - 6);  // mid-right
+    ctx.lineTo(x + TW - 6, y + cabH);      // rear right
+    ctx.closePath();
+    ctx.fill();
 
-    // Windshield (right/front face of cab, top-down = narrow strip)
-    ctx.fillStyle = '#2a4a60';
-    ctx.fillRect(cabX + cabW - 5, y + 5, 5, TH - 10);
+    // Main roof panel (silver/white)
+    ctx.fillStyle = '#d8d8d8';
+    ctx.beginPath();
+    ctx.moveTo(x + 8,      y + cabH - 1);
+    ctx.lineTo(x + 2,      y + cabH - 7);
+    ctx.lineTo(x + 4,      y + 10);
+    ctx.lineTo(x + TW / 2, y + 2);
+    ctx.lineTo(x + TW - 4, y + 10);
+    ctx.lineTo(x + TW - 2, y + cabH - 7);
+    ctx.lineTo(x + TW - 8, y + cabH - 1);
+    ctx.closePath();
+    ctx.fill();
+
+    // Roof highlight (sunlit centre strip)
+    ctx.fillStyle = '#efefef';
+    ctx.beginPath();
+    ctx.moveTo(cx - 6, y + cabH - 2);
+    ctx.lineTo(cx - 4, y + 4);
+    ctx.lineTo(cx,     y + 2);
+    ctx.lineTo(cx + 4, y + 4);
+    ctx.lineTo(cx + 6, y + cabH - 2);
+    ctx.closePath();
+    ctx.fill();
+
+    // Air dam spoiler at rear of cab (bottom edge)
+    ctx.fillStyle = '#aaa';
+    ctx.fillRect(x + 6, y + cabH - 6, TW - 12, 5);
+    ctx.fillStyle = '#ccc';
+    ctx.fillRect(x + 8, y + cabH - 5, TW - 16, 3);
+
+    // Windshield (dark strip near top of cab, just below nose)
+    ctx.fillStyle = '#1a3048';
+    ctx.beginPath();
+    ctx.moveTo(x + 5,      y + 10);
+    ctx.lineTo(x + TW - 5, y + 10);
+    ctx.lineTo(x + TW - 7, y + 22);
+    ctx.lineTo(x + 7,      y + 22);
+    ctx.closePath();
+    ctx.fill();
     // Windshield glare
-    ctx.fillStyle = 'rgba(255,255,255,0.35)';
-    ctx.fillRect(cabX + cabW - 4, y + 6, 2, 7);
+    ctx.fillStyle = 'rgba(255,255,255,0.28)';
+    ctx.beginPath();
+    ctx.moveTo(x + 7,  y + 11);
+    ctx.lineTo(x + 14, y + 11);
+    ctx.lineTo(x + 12, y + 20);
+    ctx.lineTo(x + 7,  y + 20);
+    ctx.closePath();
+    ctx.fill();
 
-    // Mirrors sticking out top and bottom
-    ctx.fillStyle = '#555';
-    ctx.fillRect(cabX + 3, y - 1, 9, 4);
-    ctx.fillRect(cabX + 3, y + TH - 3, 9, 4);
+    // Hood / engine area below windshield
+    ctx.fillStyle = '#c8c8c8';
+    ctx.fillRect(x + 7, y + 22, TW - 14, cabH - 28);
+    // Hood panel lines
+    ctx.fillStyle = 'rgba(0,0,0,0.12)';
+    ctx.fillRect(cx - 1, y + 24, 2, cabH - 30);
+    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    ctx.fillRect(cx + 2, y + 24, 4, cabH - 30);
+
+    // Color accent stripe across the cab middle
+    ctx.fillStyle = color;
+    ctx.fillRect(x + 4, y + 23, TW - 8, 4);
+    ctx.fillStyle = dim;
+    ctx.fillRect(x + 4, y + 26, TW - 8, 2);
+
+    // Exhaust stacks (small circles left and right of hood)
+    [x + 5, x + TW - 9].forEach(sx => {
+      ctx.fillStyle = '#222';
+      ctx.beginPath(); ctx.arc(sx + 2, y + 30, 3, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#555';
+      ctx.beginPath(); ctx.arc(sx + 2, y + 30, 1.5, 0, Math.PI * 2); ctx.fill();
+    });
+
+    // Mirrors — sticking out LEFT and RIGHT (near windshield level)
+    ctx.fillStyle = '#444';
+    ctx.fillRect(x - 8, y + 12, 8, 5);   // left mirror arm
+    ctx.fillRect(x + TW, y + 12, 8, 5);  // right mirror arm
     ctx.fillStyle = '#888';
-    ctx.fillRect(cabX + 4, y, 7, 2);
-    ctx.fillRect(cabX + 4, y + TH - 2, 7, 2);
+    ctx.fillRect(x - 10, y + 11, 6, 7);  // left mirror glass
+    ctx.fillRect(x + TW + 4, y + 11, 6, 7); // right mirror glass
 
-    // Steer-axle wheels
-    [[cabX + 10, y + 1], [cabX + 10, y + TH - 1]].forEach(([wx, wy]) => {
-      ctx.fillStyle = '#0f0f0f'; ctx.fillRect(wx - 4, wy - 5, 8, 5);
-      ctx.fillStyle = '#606060'; ctx.fillRect(wx - 3, wy - 4, 6, 3);
+    // Front steer-axle wheels
+    [x - 6, x + TW - 4].forEach(wx => {
+      ctx.fillStyle = '#111'; ctx.fillRect(wx, y + 28, 10, 16);
+      ctx.fillStyle = '#666'; ctx.fillRect(wx + 1, y + 29, 8, 14);
+      ctx.fillStyle = '#333'; ctx.fillRect(wx + 3, y + 31, 4, 10);
     });
-    [[cabX + 10, y + TH - 1]].forEach(([wx, wy]) => {
-      ctx.fillStyle = '#0f0f0f'; ctx.fillRect(wx - 4, wy, 8, 5);
-      ctx.fillStyle = '#606060'; ctx.fillRect(wx - 3, wy + 1, 6, 3);
-    });
-
-    if (flipped) ctx.restore();
   }
 
   function endGame() {
