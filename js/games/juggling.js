@@ -18,6 +18,7 @@ const JugglingGame = (() => {
 
     window.addEventListener('keydown', onKey);
     window.addEventListener('keyup', offKey);
+    canvas.addEventListener('mousedown', onMouseDown);
     raf = requestAnimationFrame(loop);
   }
 
@@ -40,6 +41,24 @@ const JugglingGame = (() => {
 
   function onKey(e)  { keys[e.key.toLowerCase()] = true;  }
   function offKey(e) { keys[e.key.toLowerCase()] = false; }
+
+  function onMouseDown() { triggerCatch(); }
+
+  function triggerCatch() {
+    balls.forEach(b => {
+      const handLx = jester.x - 30;
+      const handRx = jester.x + 30;
+      const handY  = jester.y - 20;
+      const nearLeft  = Math.abs(b.x - handLx) < 55 && Math.abs(b.y - handY) < 55;
+      const nearRight = Math.abs(b.x - handRx) < 55 && Math.abs(b.y - handY) < 55;
+      if (nearLeft || nearRight) {
+        b.vy = -220;
+        const toCentre = (canvas.width / 2 - b.x) * 0.015;
+        b.vx = b.vx * 0.3 + toCentre + (Math.random() - 0.5) * 16;
+        score += 10;
+      }
+    });
+  }
 
   function loop(ts) {
     const dt = Math.min((ts - lastTime) / 1000, 0.05);
@@ -96,18 +115,18 @@ const JugglingGame = (() => {
       if (b.x - b.r < 0)            { b.x = b.r;               b.vx =  Math.abs(b.vx) * 0.7; }
       if (b.x + b.r > canvas.width) { b.x = canvas.width - b.r; b.vx = -Math.abs(b.vx) * 0.7; }
 
-      // Juggle hit zone (generous - full hand width below jester waist)
+      // Juggle hit zone — generous, catch going up OR down
       const handLx = jester.x - 30;
       const handRx = jester.x + 30;
       const handY  = jester.y - 20;
-      const nearLeft  = Math.abs(b.x - handLx) < 32 && Math.abs(b.y - handY) < 36;
-      const nearRight = Math.abs(b.x - handRx) < 32 && Math.abs(b.y - handY) < 36;
+      const nearLeft  = Math.abs(b.x - handLx) < 55 && Math.abs(b.y - handY) < 55;
+      const nearRight = Math.abs(b.x - handRx) < 55 && Math.abs(b.y - handY) < 55;
 
-      if (keys['s'] && (nearLeft || nearRight) && b.vy > 0) {
-        b.vy  = -210;
-        // Gently push ball toward centre to keep it in play
-        const toCentre = (canvas.width / 2 - b.x) * 0.012;
-        b.vx  = b.vx * 0.3 + toCentre + (Math.random() - 0.5) * 18;
+      // S key, spacebar, or click (triggerCatch) all work
+      if ((keys['s'] || keys[' ']) && (nearLeft || nearRight)) {
+        b.vy  = -220;
+        const toCentre = (canvas.width / 2 - b.x) * 0.015;
+        b.vx  = b.vx * 0.3 + toCentre + (Math.random() - 0.5) * 16;
         score += 10;
       }
 
@@ -503,8 +522,8 @@ const JugglingGame = (() => {
     if (anyNear) {
       const alpha = 0.5 + 0.5 * Math.sin(ts * 0.02);
       ctx.fillStyle = `rgba(255,220,0,${alpha})`;
-      ctx.font = '13px "Press Start 2P"';
-      ctx.fillText('PRESS S!', W/2 - 52, H - 20);
+      ctx.font = '10px "Press Start 2P"';
+      ctx.fillText('S / SPACE / CLICK!', W/2 - 88, H - 20);
     }
   }
 
@@ -532,6 +551,7 @@ const JugglingGame = (() => {
     cancelAnimationFrame(raf);
     window.removeEventListener('keydown', onKey);
     window.removeEventListener('keyup', offKey);
+    if (canvas) canvas.removeEventListener('mousedown', onMouseDown);
   }
 
   return { start, stop };
