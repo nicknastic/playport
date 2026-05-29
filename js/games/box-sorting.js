@@ -142,18 +142,6 @@ const BoxSortingGame = (() => {
     drawTruck(RED_X,  TRUCK_Y, '#c0392b', 'RED');
     drawTruck(BLUE_X, TRUCK_Y, '#2980b9', 'BLUE');
 
-    // Grey bin in the middle (discard zone for grey boxes)
-    const binX = W/2 - 35, binY = TRUCK_Y + 10;
-    ctx.fillStyle = '#666';
-    ctx.fillRect(binX, binY, 70, 55);
-    ctx.fillStyle = '#444';
-    ctx.fillRect(binX - 4, binY - 6, 78, 12);
-    ctx.fillStyle = '#aaa';
-    ctx.font = '6px "Press Start 2P"';
-    ctx.fillText('TRASH', binX + 10, binY + 30);
-    ctx.font = '8px "Press Start 2P"';
-    ctx.fillText('🗑', binX + 22, binY + 48);
-
     // Boxes
     boxes.forEach(b => {
       let bg, cross, border;
