@@ -170,7 +170,7 @@ const FlappyGooseGame = (() => {
     pipes.forEach(p => {
       const bTop = p.top + GAP;
       drawTree(p.x, bTop, PIPE_W, GROUND_Y - bTop, false);
-      drawTree(p.x, 0, PIPE_W, p.top, true);
+      drawCloudPipe(p.x, p.top);
     });
 
     // ── Goose ──
@@ -242,6 +242,34 @@ const FlappyGooseGame = (() => {
     ctx.beginPath();
     ctx.ellipse(x, y + 14 * s, 56 * s, 8 * s, 0, 0, Math.PI * 2);
     ctx.fill();
+  }
+
+  // Cloud hanging down from the top of the screen (top pipe obstacle)
+  function drawCloudPipe(x, height) {
+    if (height <= 0) return;
+    const cx = x + PIPE_W / 2;
+
+    // Solid cloud body filling from top down
+    ctx.fillStyle = 'rgba(240,248,255,0.95)';
+    ctx.fillRect(x - 6, 0, PIPE_W + 12, height - 10);
+
+    // Fluffy bottom edge — overlapping circles
+    ctx.fillStyle = '#e8f2ff';
+    const puffSpacing = 14;
+    for (let px = x - 8; px < x + PIPE_W + 8; px += puffSpacing) {
+      ctx.beginPath(); ctx.arc(px, height - 10, 16, 0, Math.PI * 2); ctx.fill();
+    }
+    // Second row of smaller puffs for extra fluffiness
+    ctx.fillStyle = '#f4f8ff';
+    for (let px = x - 2; px < x + PIPE_W + 6; px += puffSpacing) {
+      ctx.beginPath(); ctx.arc(px + 7, height + 2, 11, 0, Math.PI * 2); ctx.fill();
+    }
+
+    // Subtle grey shadow on the underside
+    ctx.fillStyle = 'rgba(140,170,210,0.25)';
+    for (let px = x - 6; px < x + PIPE_W + 6; px += puffSpacing) {
+      ctx.beginPath(); ctx.arc(px, height - 8, 14, 0, Math.PI * 2); ctx.fill();
+    }
   }
 
   function drawTree(x, y, w, h, flipped) {
