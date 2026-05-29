@@ -111,11 +111,11 @@ const FlappyGooseGame = (() => {
 
     // ── Mid hills (medium parallax) ──
     ctx.fillStyle = PS.PAL.grassMid;
-    drawHillRange(bgOffset * 0.2, GROUND_Y - 45, 220, 5, 0.55);
+    drawHillRange(bgOffset * 0.2, GROUND_Y - 45, 220, 2.5, 0.55);
 
     // ── Near rolling hills ──
     ctx.fillStyle = PS.PAL.treeBase;
-    drawHillRange(bgOffset * 0.45, GROUND_Y - 22, 160, 6, 0.65);
+    drawHillRange(bgOffset * 0.45, GROUND_Y - 22, 160, 2.5, 0.65);
 
     // ── Scrolling clouds ──
     clouds.forEach(c => drawCloud(c.x, c.y, c.s));
