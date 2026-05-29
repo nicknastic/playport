@@ -104,10 +104,8 @@ const FlappyGooseGame = (() => {
     ctx.fillStyle = sunGrad;
     ctx.beginPath(); ctx.arc(sunX, sunY, 26, 0, Math.PI * 2); ctx.fill();
 
-    // ── Far mountains (very slow parallax) ──
-    const mOff = bgOffset * 0.08;
-    ctx.fillStyle = '#8898b0';
-    drawMountainRange(mOff, GROUND_Y - 80, 180, 8, 0.6);
+    // ── Distant tree line (tiny, very slow parallax) ──
+    PS.drawTreeRow(ctx, W, GROUND_Y - 58, 12, bgOffset * 0.06);
 
     // ── Far tree line (small, slow parallax) ──
     PS.drawTreeRow(ctx, W, GROUND_Y - 40, 20, bgOffset * 0.18);
