@@ -507,7 +507,7 @@ html, body {
 .gbc-speaker {
   position: absolute;
   right: 12px;
-  bottom: 120px;
+  bottom: 75px;
 }
 .speaker-dots {
   display: grid;
