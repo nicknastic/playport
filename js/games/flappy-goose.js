@@ -227,68 +227,70 @@ const FlappyGooseGame = (() => {
   }
 
   function drawCloud(x, y, s) {
-    // ── Dark flat underside (characteristic cumulus base) ──
-    ctx.fillStyle = 'rgba(120,155,195,0.55)';
-    ctx.beginPath();
-    ctx.ellipse(x + 4*s, y + 9*s, 54*s, 10*s, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    // ── Shadow / bottom layer puffs ──
-    ctx.fillStyle = 'rgba(175,200,225,0.92)';
-    [[0,5,26],[30,3,22],[-26,4,18],[54,4,16],[-50,5,14],[14,2,18]].forEach(([dx,dy,r]) => {
+    ctx.fillStyle = 'rgba(255,255,255,0.88)';
+    [[0,0,30],[30,-10,24],[-28,-6,20],[56,0,18],[-52,2,16],[14,-18,18]].forEach(([dx,dy,r]) => {
       ctx.beginPath(); ctx.arc(x+dx*s, y+dy*s, r*s, 0, Math.PI*2); ctx.fill();
     });
-
-    // ── Mid layer — light grey-white ──
-    ctx.fillStyle = 'rgba(228,238,248,0.96)';
-    [[0,0,28],[32,-5,24],[-26,-2,20],[56,0,18],[-50,1,16],[16,-14,20],[40,-12,16]].forEach(([dx,dy,r]) => {
-      ctx.beginPath(); ctx.arc(x+dx*s, y+dy*s, r*s, 0, Math.PI*2); ctx.fill();
-    });
-
-    // ── Bright white top layer ──
-    ctx.fillStyle = 'rgba(255,255,255,0.98)';
-    [[2,-8,22],[30,-14,18],[-20,-10,16],[54,-7,14],[16,-24,15],[-6,-20,12],[42,-18,13]].forEach(([dx,dy,r]) => {
-      ctx.beginPath(); ctx.arc(x+dx*s, y+dy*s, r*s, 0, Math.PI*2); ctx.fill();
-    });
-
-    // ── Pure white sunlit highlights on very top ──
-    ctx.fillStyle = '#ffffff';
-    [[4,-13,10],[32,-20,8],[-14,-16,7],[18,-28,9]].forEach(([dx,dy,r]) => {
-      ctx.beginPath(); ctx.arc(x+dx*s, y+dy*s, r*s, 0, Math.PI*2); ctx.fill();
-    });
+    ctx.fillStyle = 'rgba(100,140,180,0.18)';
+    ctx.beginPath(); ctx.ellipse(x, y+14*s, 56*s, 8*s, 0, 0, Math.PI*2); ctx.fill();
   }
 
-  // Cloud hanging down from the top of the screen (top pipe obstacle)
+  // Big cumulus cloud hanging from the top (obstacle to dodge)
   function drawCloudPipe(x, height) {
     if (height <= 0) return;
-    const ps = 14; // puff spacing
+    const cx = x + PIPE_W / 2;
+    const W2 = PIPE_W + 30; // visual width wider than hitbox
 
-    // Solid light body from top of screen down
-    ctx.fillStyle = 'rgba(228,238,248,0.97)';
-    ctx.fillRect(x - 8, 0, PIPE_W + 16, height - 8);
+    // ── Solid fill from top of screen down to cloud base ──
+    ctx.fillStyle = 'rgba(228,238,250,0.97)';
+    ctx.fillRect(x - 15, 0, W2, height - 18);
 
-    // ── Mid puff layer at bottom edge ──
-    ctx.fillStyle = 'rgba(220,232,245,0.97)';
-    for (let px = x - 8; px < x + PIPE_W + 8; px += ps) {
-      ctx.beginPath(); ctx.arc(px, height - 12, 18, 0, Math.PI * 2); ctx.fill();
+    // ── Layer 1: dark blue-grey shadow puffs (lowest, darkest) ──
+    ctx.fillStyle = 'rgba(140,168,205,0.9)';
+    for (let i = 0; i < 5; i++) {
+      const px = x - 14 + i * (W2 / 4);
+      ctx.beginPath(); ctx.arc(px, height - 10, 22, 0, Math.PI * 2); ctx.fill();
     }
 
-    // ── Bright white top-of-puff layer ──
-    ctx.fillStyle = 'rgba(255,255,255,0.98)';
-    for (let px = x - 4; px < x + PIPE_W + 4; px += ps) {
-      ctx.beginPath(); ctx.arc(px + 4, height - 20, 14, 0, Math.PI * 2); ctx.fill();
+    // ── Layer 2: medium grey-blue puffs ──
+    ctx.fillStyle = 'rgba(190,210,235,0.95)';
+    for (let i = 0; i < 4; i++) {
+      const px = x - 8 + i * (W2 / 3.2);
+      ctx.beginPath(); ctx.arc(px, height - 28, 24, 0, Math.PI * 2); ctx.fill();
     }
 
-    // ── Dark underside — the menacing flat base of the cloud ──
-    ctx.fillStyle = 'rgba(110,145,188,0.55)';
+    // ── Layer 3: light grey-white puffs ──
+    ctx.fillStyle = 'rgba(228,238,250,0.97)';
+    for (let i = 0; i < 5; i++) {
+      const px = x - 12 + i * (W2 / 3.8);
+      ctx.beginPath(); ctx.arc(px, height - 48, 26, 0, Math.PI * 2); ctx.fill();
+    }
+
+    // ── Layer 4: bright white billowing tops ──
+    ctx.fillStyle = 'rgba(252,255,255,0.99)';
+    for (let i = 0; i < 4; i++) {
+      const px = x - 6 + i * (W2 / 3.2);
+      ctx.beginPath(); ctx.arc(px, height - 68, 24, 0, Math.PI * 2); ctx.fill();
+    }
+
+    // ── Pure white sunlit highlights ──
+    ctx.fillStyle = '#ffffff';
+    for (let i = 0; i < 3; i++) {
+      const px = x + 2 + i * (W2 / 2.5);
+      ctx.beginPath(); ctx.arc(px, height - 82, 18, 0, Math.PI * 2); ctx.fill();
+    }
+
+    // ── Dark flat underside (the menacing cumulus base) ──
+    ctx.fillStyle = 'rgba(100,130,175,0.65)';
     ctx.beginPath();
-    ctx.ellipse(x + PIPE_W/2, height - 4, PIPE_W/2 + 10, 10, 0, 0, Math.PI * 2);
+    ctx.ellipse(cx, height + 2, W2 / 2, 12, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    // Fluffy bumps along the very bottom
-    ctx.fillStyle = 'rgba(160,190,220,0.7)';
-    for (let px = x - 6; px < x + PIPE_W + 6; px += ps) {
-      ctx.beginPath(); ctx.arc(px + 3, height + 4, 12, 0, Math.PI * 2); ctx.fill();
+    // ── Fluffy bottom bumps ──
+    ctx.fillStyle = 'rgba(155,185,220,0.8)';
+    for (let i = 0; i < 5; i++) {
+      const px = x - 12 + i * (W2 / 3.8);
+      ctx.beginPath(); ctx.arc(px, height + 10, 14, 0, Math.PI * 2); ctx.fill();
     }
   }
 
